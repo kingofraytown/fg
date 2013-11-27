@@ -1,0 +1,1478 @@
+//
+//  baseRoom.cpp
+//  Test1
+//
+//  Created by Anthony Jones on 5/17/13.
+//
+//
+#define TAG_SPRITE 0
+#define TAG_IMAGE 1
+#define TAG_LABEL 2
+
+#include "baseRoom.h"
+//#include "SimpleAudioEngine.h"
+#include "sstream"
+#include "global.h"
+#include "unistd.h"
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include "tinyxml/tinyxml.h"
+#include <cmath>
+
+
+using namespace cocos2d;
+//using namespace CocosDenshion;
+using namespace std;
+//using namespace tinyxml2;
+
+
+CCScene* baseRoom::scene(baseRoom* room)
+{
+    // 'scene' is an autorelease object
+    CCScene *scene = CCScene::create();
+    
+    // 'layer' is an autorelease object
+    //baseRoom *layer = baseRoom::create();
+    
+    // add layer as a child to scene
+    /*int m_tag;
+    if(s == "greenroom"){
+        m_tag = 0;
+    }
+    
+    if(s == "unloading"){
+        m_tag = 1;
+    }
+    
+    if(s == "shooting"){
+        m_tag = 2;
+    }
+    
+    if(s == "crafts"){
+        m_tag = 3;
+    }
+*/
+if(this == room)
+{
+    scene->removeAllChildrenWithCleanup(true);
+}
+    
+    room->init();
+    
+        //scene->removeAllChildren();
+        scene->addChild(room);
+        
+    
+    
+    
+    // return the scene
+    return scene;
+}
+
+// on "init" you need to initialize your instance
+bool baseRoom::init()
+{
+    //////////////////////////////
+    // 1. super init first
+    if (!CCLayer::init() )
+    {
+        return false;
+    }
+    
+    //scheduleUpdate();
+    //schedule(schedule_selector(loadOtherStuff(1.0)), 1.0, 1, 2.0);
+    loading = true;
+    
+    lastPoint.x = 0;
+    lastPoint.y = 0;
+    
+    
+    
+    // ask director the window size
+    //making the scaling factors
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    sfx = size.width/480;
+    sfy = size.height/320;
+    uCount = 0;
+    
+    //gestureMask = cocos2d::CCNode::create();
+    CCRect screenFrame = CCRect(size.width/2, size.height/2, size.width, size.height);
+    //gestureMask->boundingBox().setRect(size.width/2, size.height/2, size.width, size.height);
+    //addChild(gestureMask);
+    roomCount = 0;
+    
+    
+    // position the label on the center of the screen
+    //pLabel->setPosition( ccp(size.width / 2, size.height - 20) );
+    
+    // add the label as a child to this layer
+    //this->addChild(pLabel, 1);
+    
+    
+    
+    render =0;
+    
+    //*****Adding the BG ******************
+    // add "HelloWorld" splash screen"
+    CCSprite* pSprite;
+    cout << "type = " << type << endl;
+    //CCSprite* pSprite = CCSprite::create("cocos2dmix.png");
+
+    
+    if(type == "shooting")
+    {
+        pSprite = CCSprite::create("room_indoors1.png");
+    }
+    
+    if(type == "unloading")
+    {
+        pSprite = CCSprite::create("room_indoors2.png");
+    }
+    
+    if (type == "crafts") {
+        pSprite = CCSprite::create("room_indoors3.png");
+    }
+    
+    if(type == "greenroom")
+    {
+        pSprite = CCSprite::create("room_indoors4.png");
+    }
+    
+    
+    // position the sprite on the center of the screen
+    pSprite->setScaleY(0.35 * sfy);
+    pSprite->setScaleX(0.4 * sfx);
+    pSprite->setPosition( ccp(size.width/2, size.height/2) );
+    //pSprite->setScale(0.5);
+    // add the sprite as a child to this layer
+    this->addChild(pSprite, 0, TAG_SPRITE);
+    //***************************************
+
+    
+    //*******************************************************
+    // load and cache the texture and sprite frames
+    vector<string> Paths;
+    Paths.push_back("Resources");
+    CCFileUtils::sharedFileUtils()->setSearchPaths(Paths);
+    cocos2d::CCSpriteFrameCache* cacher;
+    cacher = CCSpriteFrameCache::sharedSpriteFrameCache();
+    cacher->addSpriteFramesWithFile("testAtlas.plist");
+    roomCount = 0;
+    //*******************************************************
+    //cout << "type = " << this << endl;
+    //type = "something";
+    
+    //make some crew members
+    
+    
+    //adding menu stuff
+    char Stats[200];
+    //const char* ctype = type.c_str();
+    sprintf(Stats,"STAM: ");
+    
+    MoveLabel = CCLabelTTF::create(Stats, "Thonburi", 30);
+    MoveLabel->setPosition(ccp(size.width/2,size.height/2 + sfy * 40 ));
+    MoveLabel->setScale(sfy);
+    MoveLabel->setAnchorPoint(ccp(0,0.5));
+    
+    Lstamina = CCLabelTTF::create(Stats, "Thonburi", 18);
+    Lstamina->setAnchorPoint(ccp(0,0.5));
+    Lstamina->setScale(sfy);
+    Lstamina->setPosition(ccp(150.0 * sfy, 170.0 * sfy));
+
+    sprintf(Stats,"SPD: ");
+    
+    Lspeed = CCLabelTTF::create(Stats, "Thonburi", 18);
+    Lspeed->setAnchorPoint(ccp(0,0.5));
+    Lspeed->setScale(sfy);
+    Lspeed->setPosition(ccp(150.0 * sfy, 156.0 * sfy));
+    
+    sprintf(Stats,"CONF: ");
+    
+    Lconfindence = CCLabelTTF::create(Stats, "Thonburi", 18);
+    Lconfindence->setAnchorPoint(ccp(0,0.5));
+    Lconfindence->setScale(sfy);
+    Lconfindence->setPosition(ccp(150 * sfy, 142.0 * sfy));
+    
+    sprintf(Stats,"FOCS: ");
+    
+    Lfocus = CCLabelTTF::create(Stats, "Thonburi", 18);
+    Lfocus->setAnchorPoint(ccp(0,0.5));
+    Lfocus->setScale(sfy);
+    Lfocus->setPosition(ccp(150.0 * sfy, 128.0 * sfy));
+    
+    sprintf(Stats,"SOCL: ");
+    
+    Lsocial = CCLabelTTF::create(Stats, "Thonburi", 18);
+    Lsocial->setAnchorPoint(ccp(0,0.5));
+    Lsocial->setScale(sfy);
+    Lsocial->setPosition(ccp(150.0 * sfy, 114.0 * sfy));
+    
+    sprintf(Stats,"SKILL: ");
+    
+    Lskill = CCLabelTTF::create(Stats, "Thonburi", 18);
+    Lskill->setAnchorPoint(ccp(0,0.5));
+    Lskill->setScale(sfy);
+    Lskill->setPosition(ccp(150.0 * sfy, 100.0 * sfy));
+    crewIndex = 0;
+    
+    CCMenuItemImage* menuButton = CCMenuItemImage::create("menu_icon.png", "menu_icon.png", this, menu_selector(baseRoom::MenuButton));
+    menuButton->setPosition(ccp(0,0));
+    menuButton->setAnchorPoint(ccp(1,0));
+    menuButton->setScale(0.1 * sfy);
+    menu_button = CCMenu::create(menuButton, NULL);
+   
+    
+    menu_button->setPosition(ccp(size.width - 10,10));
+    this->addChild(menu_button, 10 , TAG_SPRITE);
+    
+    CCMenuItemImage* crewButton = CCMenuItemImage::create("crew_button.png", "crew_button_down.png", this, menu_selector(baseRoom::crewStats));
+    crewButton->setScale(sfy);
+    //menu_bar = CCMenu::create(crewButton, NULL);
+    //crewButton->setAnchorPoint(ccp(0.5,0.5));
+    crewButton->setPosition(ccp(0, 0));
+    //menu_bar->setScale(sfy);
+    /*menu_bar->setPosition(ccp((size.width/4) + (15 * sfy),(-22 *sfy)));
+    
+    menuBar = new CCSprite();
+    //menuBar->setAnchorPoint(ccp(0.,0));
+    menuBar->initWithSpriteFrameName("menuBar");
+    //menuBar->setPosition(ccp(size.width/2,-7));
+    menuBar->setScale(sfy);
+    menuBar->setPosition(ccp(size.width/2, -7 * sfy));
+   
+    buttonPress = false;
+    //menuBar->addChild(menu_bar);
+    menuWidth = menuBar->boundingBox().size.width;
+    menuHeight = menuBar->boundingBox().size.height;
+    //crewButton->setPosition(ccp(menuWidth/2 - 100 ,menuHeight/2 -5));
+    */
+    CCMenuItemImage* saveButton = CCMenuItemImage::create("save_button_up.png", "save_button_down.png", this, menu_selector(baseRoom::saveGame));
+    saveButton->setScale(sfy);
+    //SaveButton = CCMenu::create(saveButton, NULL);
+    saveButton->setPosition(ccp(size.width/4  , /*size.height/2*/ 0));
+    //this->addChild(SaveButton, 10, TAG_IMAGE);
+    
+    CCMenuItemImage* loadButton = CCMenuItemImage::create("load_button_up.png", "load_button_down.png", this, menu_selector(baseRoom::loadGame));
+    loadButton->setScale(sfy);
+    //LoadButton = CCMenu::create(loadButton, NULL);
+    loadButton->setPosition(ccp((size.width/4) + ((sfy) * 100), /*size.height/2*/0));
+    //this->addChild(LoadButton, 10, TAG_IMAGE);
+    
+    
+    
+    menuBar = new CCSprite();
+    //menuBar->setAnchorPoint(ccp(0.,0));
+    menuBar->initWithSpriteFrameName("menuBar");
+    //menuBar->setPosition(ccp(size.width/2,-7));
+    menuBar->setScale(sfy);
+    menuBar->setPosition(ccp(size.width/2, 20 * sfy));
+    
+    buttonPress = false;
+    
+    //menuBar->addChild(menu_bar);
+    menuWidth = menuBar->boundingBox().size.width;
+    menuHeight = menuBar->boundingBox().size.height;
+
+    
+    menu_bar = CCMenu::create(crewButton,saveButton, loadButton, NULL);
+    menu_bar->setPosition(ccp((size.width/4) + (15 * sfy),(10 *sfy)));
+    statsBG = new CCSprite();
+    statsBG->initWithSpriteFrameName("menu_bg");
+    statsBG->setPosition(ccp(size.width/2, size.height/2));
+    statsBG->setScaleX(sfx);
+    statsBG->setScaleY(sfy);
+    
+    this->addChild(Lskill,0, TAG_LABEL);
+    this->addChild(Lstamina, 0, TAG_LABEL);
+    this->addChild(Lspeed, 0, TAG_LABEL);
+    this->addChild(Lfocus, 0, TAG_LABEL);
+    this->addChild(Lsocial,0, TAG_LABEL);
+    this->addChild(Lconfindence, 0, TAG_LABEL);
+    this->addChild(MoveLabel, 20, TAG_LABEL);
+    
+    statsBG->setScale(1.5 * sfy);
+    this->addChild(menuBar,-1, TAG_IMAGE);
+    this->addChild(menu_bar, -1, TAG_IMAGE);
+    this->addChild(statsBG,-1, TAG_IMAGE);
+    //*******Scaling ccsprites and adding the children to the layer
+    
+    //***************init swipe gesture*****************
+    //CCArray* gestArray = cocos2d::CCArray::create();
+    SwipeGesture = CCSwipeGestureRecognizer::create();
+    SwipeGesture->setTarget(this, callfuncO_selector(baseRoom::handleSwipe));
+    SwipeGesture->setDirection(kSwipeGestureRecognizerDirectionDown | kSwipeGestureRecognizerDirectionUp);
+    SwipeGesture->setCancelsTouchesInView(true);
+    //SwipeGesture->retain();
+   // gestArray->addObject(SwipeGesture);
+    this->addChild(SwipeGesture);
+
+    
+    //******Set Arrow buttons**********
+    isSwitching = false;
+    
+    CCMenuItemImage* rightArrow1 = CCMenuItemImage::create("arrow.png", "arrow_down.png", this, menu_selector(baseRoom::switchRight));
+    rightArrow1->setRotation(90);
+    rightArrow1->setScale(sfy);
+    //ArrowRight = CCMenu::create(rightArrow1, NULL);
+    //ArrowRight->setPosition(ccp(size.width - (10 * sfy),size.height/2));
+    
+    CCMenuItemImage* leftArrow1 = CCMenuItemImage::create("arrow.png", "arrow_down.png", this, menu_selector(baseRoom::switchLeft));
+    leftArrow1->setRotation(-90);
+    leftArrow1->setScale(sfy);
+    //ArrowLeft = CCMenu::create(leftArrow1, NULL);
+    //ArrowLeft->setPosition(ccp((10 * sfy),size.height/2));
+
+    CCMenuItemImage* upArrow1 = CCMenuItemImage::create("arrow.png", "arrow_down.png", this, menu_selector(baseRoom::switchUp));
+    upArrow1->setRotation(0);
+    upArrow1->setScale(sfy);
+    //ArrowUp = CCMenu::create(upArrow1, NULL);
+    //ArrowUp->setPosition(ccp(size.width/2,size.height - (10 * sfy)));
+    
+
+    
+    CCMenuItemImage* downArrow1 = CCMenuItemImage::create("arrow.png", "arrow_down.png", this, menu_selector(baseRoom::switchDown));
+    downArrow1->setRotation(180);
+    downArrow1->setScale(sfy);
+    //ArrowDown = CCMenu::create(downArrow1, NULL);
+    //ArrowDown->setPosition(ccp(size.width/2,(10 * sfy)));
+    
+    
+    CCMenuItemImage* leftStats = CCMenuItemImage::create("littleArrow.png", "littleArrow.png", this, menu_selector(baseRoom::switchStatsLeft));
+    leftStats->setRotation(0);
+    leftStats->setScale(sfy);
+    ArrowStateLeft = CCMenu::create(leftStats,NULL);
+    ArrowStateLeft->setPosition(ccp(20 * sfy, 100 * sfy));
+    
+    CCMenuItemImage* rightStats = CCMenuItemImage::create("littleArrow.png", "littleArrow.png", this, menu_selector(baseRoom::switchStatsRight));
+    rightStats->setRotation(180);
+    rightStats->setScale(sfy);
+    ArrowStateRight = CCMenu::create(rightStats, NULL);
+    ArrowStateRight->setPosition(ccp(size.width - (20 * sfy), 100 * sfy));
+    ArrowStateRight->setEnabled(false);
+    ArrowStateLeft->setEnabled(false);
+    
+    profilePic = new CCSprite();
+    profilePic->initWithSpriteFrameName("blue_c_profile");
+    this->addChild(profilePic,-1, TAG_IMAGE);
+    //this->addChild(ArrowRight, 7, TAG_IMAGE);
+    //this->addChild(ArrowLeft, 7, TAG_IMAGE);
+    //this->addChild(ArrowDown, 7, TAG_IMAGE);
+    //this->addChild(ArrowUp, 7, TAG_IMAGE);
+    this->addChild(ArrowStateLeft, -1, TAG_IMAGE);
+    this->addChild(ArrowStateRight, -1, TAG_IMAGE);
+    //********Set Arrows******************************
+    /*rightArrow = new CCSprite();
+    leftArrow = new CCSprite();
+    downArrow = new CCSprite();
+    upArrow = new CCSprite();
+    
+    
+    rightArrow->initWithSpriteFrameName("arrow");
+    //rightArrow->setScaleY(0.5);
+    rightArrow->setPosition(ccp(size.width - 10,size.height/2));
+    rightArrow->setRotation(90);
+   
+    
+      
+    leftArrow->initWithSpriteFrameName("arrow");
+    //leftArrow->setScaleY(0.5);
+    leftArrow->setPosition(ccp(10,size.height/2));
+    leftArrow->setRotation(-90);
+       
+    upArrow->initWithSpriteFrameName("arrow");
+    //upArrow->setScaleY(0.5);
+    upArrow->setPosition(ccp(size.width/2,size.height - 10));
+    upArrow->setRotation(0);
+       
+    downArrow->initWithSpriteFrameName("arrow");
+    //downArrow->setScaleY(0.5);
+    downArrow->setPosition(ccp(size.width/2,10));
+    downArrow->setRotation(180);*/
+       //*************************************************
+    
+    
+       
+    //pSprite->setScaleX(sfx);
+    //pSprite->setScaleY(sfy);
+    
+   
+    //Jmo->setAnchorPoint(ccp(0.5,0.0));
+    //Jmo->cocos2d::CCNode::setPosition(ccp(70.0 * sfx, 50.0 * sfy));
+    //Doug->setAnchorPoint(ccp(0.5, 0.0));
+    //Doug->cocos2d::CCNode::setPosition(ccp(40.0 * sfx, 50.0 * sfy));
+    
+    
+       //this->addChild(room,0);
+    //this->addChild(rightArrow, 7);
+    //this->addChild(leftArrow, 7);
+    //this->addChild(upArrow, 7);
+    //this->addChild(downArrow, 7);
+    char text[200];
+    const char* ctype = type.c_str();
+    sprintf(text,"%s", dbP.c_str());
+    
+    RoomName = CCLabelTTF::create(text, "Thonburi", 12);
+    RoomName->setPosition(ccp(130.0 * sfy, 250.0 * sfy));
+    sprintf(text,"(0,0,0,0,0,0)");
+    
+    TSVlabel = CCLabelTTF::create(text, "Thonburi", 25);
+    TSVlabel->setPosition(ccp(200 * sfy, 100 * sfy));
+    
+    timer = CCLabelTTF::create(ctype, "Thonburi", 40);
+    timer->setPosition(ccp(200.0 * sfy, 200.0 * sfy));
+   
+    this->addChild(RoomName, 3, TAG_LABEL);
+    this->addChild(timer, 3, TAG_LABEL);
+    this->addChild(TSVlabel, 4, TAG_LABEL);
+        
+    //RoomName->setString(type);
+     
+    
+    //********Adding the crew members to the layer**************
+    //right
+    /*for(int i = 0; i < thisRoom.size();i++){
+        this->addChild(thisRoom[i], 2);
+        // float b = rightCrewVector[i]->g_x;
+        CCPoint p = thisRoom[i]->getPosition();
+        cout << thisRoom[i] << endl;
+        thisRoom[i]->isSwitchingRooms = false;
+        thisRoom[i]->setPositionX((float)thisRoom[i]->getg_x());
+        thisRoom[i]->setPositionY((float)thisRoom[i]->getg_y());
+    }
+   */
+    
+    //***********************************************************
+    blueFade = CCSprite::create("blue_fade.png");
+    blueFade->setAnchorPoint(ccp(0.5, 0.5));
+    blueFade->setPosition(ccp(size.width/2, 2 * (size.height/3)));
+    
+    greenFade = CCSprite::create("green_fade.png");
+    greenFade->setAnchorPoint(ccp(.5, .5));
+    greenFade->setRotation(180);
+    greenFade->setAnchorPoint(ccp(0.5, 0));
+    greenFade->setPosition(ccp(size.width/2, 0));
+    
+    this->addChild(blueFade,15, TAG_IMAGE);
+    this->addChild(greenFade, 15, TAG_IMAGE);
+    inTransition = false;
+    menuUp = false;
+    tempermentShift(CrewVectors.at(roomKey));
+    //*****Enable Stuff*************
+    this->setTouchEnabled(true);
+    //******************************
+    rConfig->printConfig();
+    this->schedule(schedule_selector(baseRoom::update));
+   
+    return true;
+}
+
+void baseRoom::tempermentShift(vector<crew*>& cArray)
+{
+    vector<int> TSV(6);
+    
+    //for loop through all of the crew’s temperaments; adding up the stat bonuses/penalties
+    //foreach(crew_member in rightCrewVector){
+    for(int i = 0;i < cArray.size();i++)
+    {
+        //cArray[i]->temperAssign();
+        for(int j = 0;j < 6;j++)
+        {
+            TSV[j] += cArray[i]->tempBonus[j];
+        }
+        
+    }
+    char text[256];
+    //stam,skill,speed,focus,morale,confidence
+    for(int k = 0;k < cArray.size();k++)
+    {
+        cArray[k]->chStamina(TSV[0]);
+        cArray[k]->chSkill(TSV[1]);
+        cArray[k]->chSpeed(TSV[2]);
+        cArray[k]->chFocus(TSV[3]);
+        cArray[k]->chMorale(TSV[4]);
+        cArray[k]->chConfidence(TSV[5]);
+        
+        
+        /*sprintf(text,"STAM: %d",cArray[0]->stamina);
+        //Lstamina->setString(text);
+        
+        sprintf(text, "SPD: %d",cArray[0]->speed);
+        //Lspeed->setString(text);
+        
+        sprintf(text, "SKILL: %d",cArray[0]->skill);
+        //Lskill->setString(text);
+        
+        sprintf(text, "FOCS: %d",cArray[0]->focus);
+        //Lfocus->setString(text);
+        
+        sprintf(text, "SOCL: %d",cArray[0]->social);
+        //Lsocial->setString(text);
+        
+        sprintf(text,"CONF: %d", cArray[0]->baseConfidence);
+        //LbaseConfidence->setString(text);
+        
+        sprintf(text,"STAM: %d",cArray[1]->stamina);
+        //Lstamina2->setString(text);
+        
+        sprintf(text, "SPD: %d",cArray[1]->speed);
+        //Lspeed2->setString(text);
+        
+        sprintf(text, "SKILL: %d",cArray[1]->skill);
+        //Lskill2->setString(text);
+        
+        sprintf(text, "FOCS: %d",cArray[1]->focus);
+        //Lfocus2->setString(text);
+        
+        sprintf(text, "SOCL: %d",cArray[1]->social);
+        //Lsocial2->setString(text);
+        
+        sprintf(text,"CONF: %d", cArray[1]->baseConfidence);
+        //LbaseConfidence2->setString(text);
+        */
+       
+        sprintf(text,"(%d,%d,%d,%d,%d,%d)", TSV[0],TSV[1],TSV[2],TSV[3],TSV[4],TSV[5]);
+        
+        TSVlabel->setString(text);
+    }
+    
+}
+void baseRoom::setType(string t)
+{
+    cout << "before = " << type << endl;
+    type = t;
+    cout << this << endl;
+    cout << "after = " << type << endl;
+    
+    
+}
+
+string baseRoom::getType()
+{
+    string t;
+    t = type;
+    return t;
+}
+void baseRoom::registerWithTouchDispatcher()
+{
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
+}
+
+void baseRoom::ccTouchEnded( CCTouch *touch, CCEvent *event){
+    CCPoint location = touch->getLocation();
+    MoveLabel->setString("T_Ended");
+    cout << "location x:" << location.x << " y:" << location.y << endl;
+    if(target != NULL){
+    target->onRelease();
+    //target->tempLocation = location;
+    if(target->isFlicked){
+        thrownCrew.push_back(target);
+    }
+    }
+    char text[256];
+    
+    cout << "menuUp = " << menuUp << endl;
+    /*if(!buttonPress){
+    if(!menuUp){
+    
+    
+   
+        
+        if (menuBar->boundingBox().containsPoint(location)) {
+            if(menuUp == false){
+                menuBar->setPositionY(20 * sfy);
+                menu_bar->setPositionY(10 * sfy);
+                //ArrowDown->setEnabled(false);
+                //ArrowDown->setZOrder(-1);
+                menuUp = true;
+            }
+            
+        }
+    }
+    else
+    {
+                
+        if (menuBar->boundingBox().containsPoint(location)) {
+            
+            
+                menuBar->setPositionY(-7 * sfy);
+            menu_bar->setPositionY(-22 * sfy);
+            
+                //crewButton->setPositionY(-10);
+                
+            
+                //ArrowDown->setEnabled(true);
+                //ArrowDown->setZOrder(7);
+                menuUp = false;
+            
+            
+            
+        }
+
+    }
+    }*/
+    
+    target = NULL;
+    SwipeGesture->setCancelsTouchesInView(true);
+}
+
+bool baseRoom::ccTouchBegan(CCTouch *touch, CCEvent *event){
+    CCPoint location = touch->getLocation();
+    MoveLabel->setString("T_Began");
+    
+    if(menuUp == false){
+    for(int i = 0; i <thisRoom.size();i++){
+        if(thisRoom[i]->boundingBox().containsPoint(location))
+        {
+            target = thisRoom[i];
+            target->onGrab(location);
+            SwipeGesture->setCancelsTouchesInView(false);
+        }
+        /*else
+         {
+         target = NULL;
+         }*/
+    }
+    }
+
+    
+   
+    
+    return true;
+    
+}
+
+void baseRoom::ccTouchMoved(CCTouch* touch, CCEvent* event)
+{
+    CCPoint location = touch->getLocation();
+        MoveLabel->setString("T_Moved");
+    if((target != NULL) &&(!menuUp)){
+        SwipeGesture->setCancelsTouchesInView(false);
+        cout << "target != NULL" << endl;
+        if(target->isGrabbed)
+        {
+            cout << "target grab TRUUUUUE" << endl;
+            //if((location.x == lastPoint.x) && (location.y == lastPoint.y))
+            if(distanceBetweenPoint(location, lastPoint))
+            {
+                cout << "target didn't move" <<endl;
+                target->onRelease();
+                //target->tempLocation = location;
+                if(target->isFlicked){
+                    thrownCrew.push_back(target);
+                }
+            }
+            target->setPosition(location);
+            target->setg_x(location.x);
+            target->setg_y(location.y);
+            
+            target->tempLocation = location;
+        }
+        
+    }
+  
+    /*if((location.x == lastPoint.x) && (location.y == lastPoint.y)){
+        cout << "stuck event" << endl;
+        ccTouchEnded(touch, event);
+        cout << "inner touch ended" << endl;
+        
+    }
+     */
+    lastPoint = touch->getLocation();
+  }
+
+void baseRoom::ccTouchesCancelled(CCSet* touches, CCEvent* event){
+    
+}
+
+void baseRoom::menuCloseCallback(CCObject* pSender)
+{
+    CCDirector::sharedDirector()->end();
+    
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    exit(0);
+#endif
+}
+void baseRoom::assignCrewVectors(){
+    
+    if(upRoom){
+    string up = upRoom->roomKey;
+    //cout << up << endl;
+    upCrewVector = CrewVectors.at(up);
+    }
+    if(downRoom){
+    
+    string down = downRoom->roomKey;
+        //cout << down << endl;
+    downCrewVector = CrewVectors.at(down);
+        
+    }
+    if(rightRoom){
+    string right = rightRoom->roomKey;
+    rightCrewVector = CrewVectors.at(right);
+    
+    }
+    
+    if(leftRoom){
+    string left = leftRoom->roomKey;
+    leftCrewVector = CrewVectors.at(left);
+    }
+    //cout << roomKey << endl;
+    thisRoom = CrewVectors.at(roomKey);
+
+    
+}
+void baseRoom::update(float dt)
+{
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    for ( int j = 0; j < thrownCrew.size();j++)
+    {
+        thrownCrew[j]->vectorPush();
+    }
+    //*****************
+    //make the boundry values dynamic DON'T LEAVE THEM HARD CODED dumbass
+    //*****************
+    if(leftRoom != NULL){
+        //test for crew leaving to the left room
+        for(int k = 0;k < thisRoom.size();k++)
+        {
+            if(thisRoom[k]->getg_x() < 10 * sfy){
+                thisRoom[k]->setg_x(size.width - (40 * sfy));
+                thisRoom[k]->setPositionX(thisRoom[k]->getg_x());
+                CCPoint p = thisRoom[k]->getPosition();
+                cout << thisRoom[k] << endl;
+                if(thisRoom[k]->isFlicked){
+                    thisRoom[k]->isFlicked = false;
+                }
+                thisRoom[k]->isSwitchingRooms = true;
+                //leftCrewVector.push_back(thisRoom[k]);
+                 CrewVectors.at(leftRoom->roomKey).push_back(thisRoom[k]);
+                //rightCrewVector[k]->setPositionX(rightCrewVector)
+                removeChild(thisRoom[k]);
+                CrewVectors.at(roomKey).erase(CrewVectors.at(roomKey).begin() + k);
+                thisRoom.erase(thisRoom.begin()+k);
+                
+                tempermentShift(CrewVectors.at(roomKey));
+            
+            }
+        }
+    }
+    else{
+        for(int k = 0;k < thisRoom.size();k++)
+        {
+            if(thisRoom[k]->getg_x() < 30 * sfy){
+                thisRoom[k]->setg_x(30 * sfy);
+                thisRoom[k]->setPositionX(thisRoom[k]->getg_x());
+                if(thisRoom[k]->isFlicked){
+                    thisRoom[k]->isFlicked = false;
+                }
+
+            }
+        }
+
+    }
+    //right
+    if(rightRoom != NULL){
+    for(int k = 0;k < thisRoom.size();k++)
+    {
+        if(thisRoom[k]->getg_x() > (size.width - (30 * sfy))){
+            thisRoom[k]->setg_x(20 * sfy);
+            thisRoom[k]->setPositionX(thisRoom[k]->getg_x());
+            CCPoint p = thisRoom[k]->getPosition();
+            //float b = thisRoom[k]->g_x;
+            cout << thisRoom[k] << endl;
+            if(thisRoom[k]->isFlicked){
+                thisRoom[k]->isFlicked = false;
+            }
+
+            thisRoom[k]->isSwitchingRooms = true;
+            //rightCrewVector.push_back(thisRoom[k]);
+            CrewVectors.at(rightRoom->roomKey).push_back(thisRoom[k]);
+            //rightCrewVector[k]->setPositionX(rightCrewVector)
+            removeChild(thisRoom[k]);
+            CrewVectors.at(roomKey).erase(CrewVectors.at(roomKey).begin() + k);
+            thisRoom.erase(thisRoom.begin()+k);
+            tempermentShift(CrewVectors.at(roomKey));
+            
+        }
+    }
+    }
+    else{
+        for(int k = 0;k < thisRoom.size();k++)
+        {
+            if(thisRoom[k]->getg_x() > (size.width - (30 * sfy))){
+                thisRoom[k]->setg_x(size.width - (30 * sfy));
+                thisRoom[k]->setPositionX(thisRoom[k]->getg_x());
+                if(thisRoom[k]->isFlicked){
+                    thisRoom[k]->isFlicked = false;
+                }
+
+            }
+        }
+        
+    }
+    
+    if(upRoom != NULL){
+        //test for crew leaving to the left room
+        for(int k = 0;k < thisRoom.size();k++)
+        {
+            if(thisRoom[k]->getg_y() > (size.height - (15 * sfy))){
+                thisRoom[k]->setg_y(30 * sfy);
+                thisRoom[k]->setPositionY(thisRoom[k]->getg_y());
+                CCPoint p = thisRoom[k]->getPosition();
+                if(thisRoom[k]->isFlicked){
+                    thisRoom[k]->isFlicked = false;
+                }
+
+                thisRoom[k]->isSwitchingRooms = true;
+                //upCrewVector.push_back(thisRoom[k]);
+                CrewVectors.at(upRoom->roomKey).push_back(thisRoom[k]);
+                //rightCrewVector[k]->setPositionX(rightCrewVector)
+                removeChild(thisRoom[k]);
+                CrewVectors.at(roomKey).erase(CrewVectors.at(roomKey).begin() + k);
+                thisRoom.erase(thisRoom.begin()+k);
+                tempermentShift(CrewVectors.at(roomKey));
+                
+            }
+        }
+    }
+    else{
+        for(int k = 0;k < thisRoom.size();k++)
+        {
+            if(thisRoom[k]->getg_y() > (size.height - (15 * sfy))){
+                thisRoom[k]->setg_y(size.height - (30 * sfy));
+                thisRoom[k]->setPositionY(thisRoom[k]->getg_y());
+                if(thisRoom[k]->isFlicked){
+                    thisRoom[k]->isFlicked = false;
+                }
+
+            }
+        }
+    }
+    if(downRoom != NULL){
+        //test for crew leaving to the left room
+        for(int k = 0;k < thisRoom.size();k++)
+        {
+            if(thisRoom[k]->getg_y() < 15 * sfy){
+                thisRoom[k]->setg_y(size.height - (30 * sfy));
+                thisRoom[k]->setPositionY(thisRoom[k]->getg_y());
+                CCPoint p = thisRoom[k]->getPosition();
+                if(thisRoom[k]->isFlicked){
+                    thisRoom[k]->isFlicked = false;
+                }
+
+                thisRoom[k]->isSwitchingRooms = true;
+                //downCrewVector.push_back(thisRoom[k]);
+                CrewVectors.at(downRoom->roomKey).push_back(thisRoom[k]);
+                //rightCrewVector[k]->setPositionX(rightCrewVector)
+                removeChild(thisRoom[k]);
+                CrewVectors.at(roomKey).erase(CrewVectors.at(roomKey).begin() + k);
+                thisRoom.erase(thisRoom.begin()+k);
+                tempermentShift(CrewVectors.at(roomKey));
+                
+            }
+        }
+    }
+    else{
+        for(int k = 0;k < thisRoom.size();k++)
+        {
+            if(thisRoom[k]->getg_y() < 15 * sfy){
+                thisRoom[k]->setg_y(30 * sfy);
+                thisRoom[k]->setPositionY(thisRoom[k]->getg_y());
+                if(thisRoom[k]->isFlicked){
+                    thisRoom[k]->isFlicked = false;
+                }
+
+            }
+        }
+
+    }
+    int throwCount = thrownCrew.size();
+    if(throwCount != 0){
+        for ( int i = 0; i < throwCount; i++)
+        {
+            if(thrownCrew.size() == 0 ){
+                break;
+            }
+            
+            if(thrownCrew[i]->isFlicked == false)
+            {
+                thrownCrew.erase(thrownCrew.begin()+i);
+            }
+        }
+    }
+    
+    if(loading == true){
+    render++;
+    }
+    
+    if(render == 2){
+        loadOtherStuff();
+        render = 0;
+        loading = false;
+       
+    }
+    roomCount++;
+    char stext[20];
+    sprintf(stext,"%d", roomCount);
+     
+       }
+
+void baseRoom::loadOtherStuff()
+{
+    assignCrewVectors();
+    //sleep(10.0);
+    //********Adding the crew members to the layer**************
+    //right
+    for(int i = 0; i < thisRoom.size();i++){
+        
+            this->addChild(thisRoom[i], 2, TAG_SPRITE);
+        
+        thisRoom[i]->isSwitchingRooms = false;
+        thisRoom[i]->setAnchorPoint(ccp(0.5, 0.5));
+        thisRoom[i]->setPositionX((float)thisRoom[i]->getg_x());
+        thisRoom[i]->setPositionY((float)thisRoom[i]->getg_y());
+        thisRoom[i]->setScale(sfy);
+    }
+    
+    
+    //***********************************************************
+
+    
+}
+
+void baseRoom::switchUp()
+{
+    if((upRoom != NULL) && (isSwitching == false))
+    {
+        isSwitching = true;
+        fadeUP();
+        if(inTransition == false){
+        this->removeAlmostEverything();
+        CCDirector::sharedDirector()->replaceScene(upRoom->scene(upRoom));
+        }
+        //cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+        //this->removeChild(SwipeGesture, true);
+        
+    }
+
+
+}
+
+void baseRoom::switchDown()
+{
+    if((downRoom != NULL) && (isSwitching == false))
+    {
+        isSwitching = true;
+        this->removeAlmostEverything();
+        CCDirector::sharedDirector()->replaceScene(downRoom->scene(downRoom));
+       
+       
+    }
+
+}
+
+
+void baseRoom::switchRight()
+{
+    if(rightRoom != NULL)
+    {
+         this->removeAlmostEverything();
+        CCDirector::sharedDirector()->replaceScene(rightRoom->scene(rightRoom));
+       // this->removeAllChildren();
+    }
+}
+
+void baseRoom::switchLeft()
+{
+    if(leftRoom != NULL)
+    {
+        this->removeAlmostEverything();
+        CCDirector::sharedDirector()->replaceScene(leftRoom->scene(leftRoom));
+        //this->removeAllChildren();
+    }
+   
+}
+
+void baseRoom::switchStatsLeft()
+{
+    crewIndex--;
+    if (crewIndex < 0) {
+        crewIndex = thisRoom.size() -1;
+    }
+    
+    loadStats(thisRoom[crewIndex]);   
+}
+
+void baseRoom::switchStatsRight()
+{
+    crewIndex++;
+    if (crewIndex == thisRoom.size()) {
+        crewIndex = 0;
+    }
+    
+    loadStats(thisRoom[crewIndex]);
+    
+}
+
+void baseRoom::crewStats()
+{
+    if(menuUp){
+        if(!buttonPress){
+            statsBG->setZOrder(14);
+            Lskill->setZOrder(15);
+            Lstamina->setZOrder(15);
+            Lspeed->setZOrder(15);
+            Lfocus->setZOrder(15);
+            Lsocial->setZOrder(15);
+            Lconfindence->setZOrder(15);
+            buttonPress = true;
+            if (thisRoom.size() != 0){
+                ArrowStateLeft->setEnabled(true);
+                ArrowStateRight->setEnabled(true);
+                ArrowStateRight->setZOrder(15);
+                ArrowStateLeft->setZOrder(15);
+
+            
+            loadStats(thisRoom[crewIndex]);
+            }
+        }
+        else
+        {
+            statsBG->setZOrder(-1);
+            Lskill->setZOrder(-1);
+            Lstamina->setZOrder(-1);
+            Lspeed->setZOrder(-1);
+            Lfocus->setZOrder(-1);
+            Lsocial->setZOrder(-1);
+            Lconfindence->setZOrder(-1);
+            buttonPress = false;
+            ArrowStateRight->setEnabled(false);
+            ArrowStateLeft->setEnabled(false);
+            ArrowStateRight->setZOrder(-1);
+            ArrowStateLeft->setZOrder(-1);
+            profilePic->setScale(sfy);
+            profilePic->setZOrder(-1);
+            crewIndex =0;
+        
+        }
+    }
+
+
+}
+
+void baseRoom::loadStats(crew *cMember)
+{
+    
+    char pic[100];
+    sprintf(pic,"%s_profile",cMember->image.c_str());
+    cout << pic << endl;
+    CCSpriteFrameCache* cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+    CCSpriteFrame* frame = cache->spriteFrameByName(pic);
+    profilePic->setDisplayFrame(frame);
+    profilePic->setOpacity(200);
+    profilePic->setPosition(ccp(300 * sfy,150 * sfy));
+    profilePic->setZOrder(14);
+    
+   
+    
+    char Stats[200];
+    //const char* ctype = type.c_str();
+    sprintf(Stats,"STAM : %d",cMember->getActiveStamina());
+    Lstamina->setString(Stats);
+    
+    sprintf(Stats,"SPED : %d",cMember->getActiveSpeed());
+    Lspeed->setString(Stats);
+    
+    sprintf(Stats,"SKILL : %d",cMember->getActiveSkill());
+    Lskill->setString(Stats);
+    
+    sprintf(Stats,"FOCS : %d",cMember->getActiveFocus());
+    Lfocus->setString(Stats);
+    
+    sprintf(Stats,"SOCL : %d",cMember->getActiveSocial());
+    Lsocial->setString(Stats);
+    
+    sprintf(Stats,"CONF : %d",cMember->getActiveConfidence());
+    Lconfindence->setString(Stats);
+    
+    
+    
+    
+}
+void baseRoom::gestureBufferDown(){
+    switchDown();
+}
+
+void baseRoom::gestureBufferUp(){
+    
+    switchUp();
+}
+void baseRoom::handleSwipe(CCObject* obj)
+{
+    CCSwipe * swipe = (CCSwipe*)obj;
+    if((target == NULL)&& (menuUp == false)){
+    if(swipe->direction == kSwipeGestureRecognizerDirectionUp){
+
+        cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+        //this->removeChild(SwipeGesture);
+        gestureBufferUp();
+    }
+    
+    if(swipe->direction == kSwipeGestureRecognizerDirectionDown){
+        //swipe->release();
+       
+        cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+        gestureBufferDown();
+        //this->removeChild(SwipeGesture);
+       // switchDown();
+    }
+    }
+}
+
+void baseRoom::saveGame()
+{
+    //get write path
+    string path = CCFileUtils::sharedFileUtils()->getWritablePath();
+    
+    //append file name
+    path.append("saveGame.xml");
+    cout << path << endl;
+   /*
+    SavedUserData* gSave = new SavedUserData();
+    //crew* tempCrew;
+    crewInfo* tempCrewInfo;
+    for(int i = 0; i < crewMembers.size()-1;i++)
+    {
+        tempCrewInfo->crewId->create(crewMembers[i]->crewID);
+        tempCrewInfo->g_x->create(crewMembers[i]->getg_x());
+        tempCrewInfo->g_y->create(crewMembers[i]->getg_y());
+        
+        gSave->CurrentCrew->addObject(tempCrewInfo);
+    }
+    gameSave->setObject(gSave, "save_1");
+    gameSave->writeToFile(path.c_str());
+    */
+    //*********************************
+    TiXmlDocument *doc = new TiXmlDocument();
+    
+    //declearation
+    TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
+    doc->LinkEndChild( decl );
+    
+    //root
+    TiXmlElement* root = new TiXmlElement("crewmembers");
+    root->SetAttribute("name", "crewmembers");
+    doc->LinkEndChild( root);
+    
+    //loop through crew
+    for(int i = 0; i < CrewVectors.at("room1crew").size();i++)
+    {
+        cout << i << endl;
+        crew* tempCrew = CrewVectors.at("room1crew")[i];
+        char intBuf[50];
+        //make stats element
+        TiXmlElement* crew = new TiXmlElement("crew");
+        crew->SetAttribute("name", "crew");
+        root->LinkEndChild(crew);
+        
+        //make stats element
+        TiXmlElement* stats = new TiXmlElement("stats");
+        stats->SetAttribute("name", "stats");
+        crew->LinkEndChild(stats);
+    
+            //make stat nodes
+        TiXmlElement* skill = new TiXmlElement("skill");
+        stats->LinkEndChild(skill);
+        //convert int to CString
+        sprintf(intBuf, "%d", tempCrew->skill);
+        skill->LinkEndChild(new TiXmlText(intBuf));
+       
+        TiXmlElement* speed = new TiXmlElement("speed");
+        stats->LinkEndChild(speed);
+        sprintf(intBuf, "%d", tempCrew->speed);
+        speed->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* morale = new TiXmlElement("morale");
+        stats->LinkEndChild(morale);
+        sprintf(intBuf, "%d", tempCrew->morale);
+        morale->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* focus = new TiXmlElement("focus");
+        stats->LinkEndChild(focus);
+        sprintf(intBuf, "%d", tempCrew->focus);
+        focus->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* baseConfidence = new TiXmlElement("baseConfidence");
+        stats->LinkEndChild(baseConfidence);
+        sprintf(intBuf, "%d", tempCrew->baseConfidence);
+        baseConfidence->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* social = new TiXmlElement("social");
+        stats->LinkEndChild(social);
+        sprintf(intBuf, "%d", tempCrew->social);
+        social->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* stamina = new TiXmlElement("stamina");
+        stats->LinkEndChild(stamina);
+        sprintf(intBuf, "%d", tempCrew->stamina);
+        stamina->LinkEndChild(new TiXmlText(intBuf));
+
+        TiXmlElement* prodSkill = new TiXmlElement("prodSkill");
+        stats->LinkEndChild(prodSkill);
+        //convert int to CString
+        sprintf(intBuf, "%d", tempCrew->prodSkill);
+        prodSkill->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* prodSpeed = new TiXmlElement("prodSpeed");
+        stats->LinkEndChild(prodSpeed);
+        sprintf(intBuf, "%d", tempCrew->prodSpeed);
+        prodSpeed->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* prodMorale = new TiXmlElement("prodMorale");
+        stats->LinkEndChild(prodMorale);
+        sprintf(intBuf, "%d", tempCrew->prodMorale);
+        prodMorale->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* prodFocus = new TiXmlElement("prodFocus");
+        stats->LinkEndChild(prodFocus);
+        sprintf(intBuf, "%d", tempCrew->prodFocus);
+        prodFocus->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* prodConfidence = new TiXmlElement("prodConfidence");
+        stats->LinkEndChild(prodConfidence);
+        sprintf(intBuf, "%d", tempCrew->prodConfidence);
+        prodConfidence->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* prodSocial = new TiXmlElement("prodSocial");
+        stats->LinkEndChild(prodSocial);
+        sprintf(intBuf, "%d", tempCrew->prodSocial);
+        prodSocial->LinkEndChild(new TiXmlText(intBuf));
+        
+        TiXmlElement* prodStamina = new TiXmlElement("prodStamina");
+        stats->LinkEndChild(prodStamina);
+        sprintf(intBuf, "%d", tempCrew->prodStamina);
+        prodStamina->LinkEndChild(new TiXmlText(intBuf));
+        //end of stats
+
+        //crew id
+        TiXmlElement* crewID = new TiXmlElement("crewID");
+        crewID->SetAttribute("name", "crewID");
+        crew->LinkEndChild(crewID);
+        sprintf(intBuf, "%d", tempCrew->crewID);
+        crewID->LinkEndChild( new TiXmlText(intBuf));
+        
+        //hours on set
+        
+        //days on set
+        
+        //image name
+        
+        //bool yesterday
+        
+        //bool onSet
+        
+        char floatBuf[16];
+        //g_x
+        TiXmlElement* gcoordX = new TiXmlElement("gcoordX");
+        gcoordX->SetAttribute("name","gcoordX");
+        crew->LinkEndChild(gcoordX);
+        sprintf(floatBuf, "%f", tempCrew->getg_x());
+        gcoordX->LinkEndChild( new TiXmlText(floatBuf));
+        
+        //g_y
+        TiXmlElement* gcoordY = new TiXmlElement("gcoordY");
+        gcoordY->SetAttribute("name","gcoordY");
+        crew->LinkEndChild(gcoordY);
+        sprintf(floatBuf, "%f", tempCrew->getg_y());
+        gcoordY->LinkEndChild( new TiXmlText(floatBuf));
+        
+        //temperaments
+        
+            //make element
+        TiXmlElement* temperaments = new TiXmlElement("temperaments");
+        crew->LinkEndChild(temperaments);
+
+        
+            //loop through temperaments
+            for(int k = 0; k < tempCrew->temperament.size(); k++){
+                
+                //make node for each
+                TiXmlElement* temperament = new TiXmlElement("temperament");
+                crew->LinkEndChild(temperament);
+                sprintf(intBuf, "%d", tempCrew->temperament[k]);
+                temperament->LinkEndChild( new TiXmlText(intBuf));
+                
+            }
+
+            
+    }
+    doc->SaveFile(path.c_str());
+    
+    
+    
+}
+
+void baseRoom::loadGame()
+{
+    //get write path
+    string path = CCFileUtils::sharedFileUtils()->getWritablePath();
+    
+    //append file name
+    path.append("saveGame.xml");
+    cout << path << endl;
+    
+    TiXmlDocument doc(path.c_str());
+    
+    bool loadOkay = doc.LoadFile();
+    
+    if(loadOkay){
+        
+    /*this will just reposition the crew for right now*/
+
+        TiXmlElement* pElem;
+        TiXmlHandle hroot(0);
+        TiXmlHandle hdoc(&doc);
+        
+        //hroot=TiXmlHandle(pElem);
+        
+        //get the number of active crew members
+        
+        //for loop by number of crew
+        TiXmlElement* xCoord;
+        TiXmlElement* yCoord;
+        TiXmlElement* cID;
+        TiXmlElement* tempElem;
+        
+        int cid;
+        float gy, gx;
+        pElem=hdoc.FirstChildElement().Element();
+        hroot=TiXmlHandle(pElem);
+        //int i = 0;
+        pElem=hroot.FirstChild( "crew" ).FirstChild().Element();
+        for( pElem=hroot.FirstChild( "crew" ).Element(); pElem; pElem=pElem->NextSiblingElement()){
+            //tempElement
+            tempElem = pElem;
+            cout << pElem->Attribute("name") << endl;
+            
+            //pElem = pElem->FirstChildElement();
+            //pElem = pElem->NextSiblingElement();
+            //crew ID
+        cID = pElem->FirstChild()->NextSiblingElement();
+            //x and y coordinates
+            //pElem = pElem->NextSiblingElement();
+        xCoord = pElem->FirstChild()->NextSiblingElement()->NextSiblingElement();
+            
+            //pElem = pElem->NextSiblingElement();
+        yCoord = pElem->FirstChild()->NextSiblingElement()->NextSiblingElement()->NextSiblingElement();
+            // get the crew ID for matching
+            //cID = pElem->NextSiblingElement();
+            //const char* xv = xCoord->Value();
+        gx = atof(xCoord->GetText());
+        gy = atof(yCoord->GetText());
+        cid = atoi(cID->GetText());
+            
+        cout << "gx:" << gx << " gy:" << gy<< " id:" << cid<< endl;
+            
+        vector<crew*> roomcrew = CrewVectors.at("room1crew");
+            //loop throught room1crew vector to find matching crew object by crewId
+            for(int i = 0; i < CrewVectors.at("room1crew").size();i++)
+            {
+                if(cid == roomcrew[i]->crewID){
+                    roomcrew[i]->setPosition(ccp(gx,gy));
+                }
+            }
+        //pElem = tempElem->NextSiblingElement();
+            
+                      
+        }
+        
+        
+    }
+    else{
+        cout << "load failed" << endl;
+    }
+    
+    
+}
+void baseRoom::removeAlmostEverything()
+{
+    CCNode * aChild;
+    while ((aChild = this->getChildByTag(TAG_LABEL)) != NULL)
+    {
+        removeChild(aChild, true);
+    }
+    
+    while ((aChild = this->getChildByTag(TAG_IMAGE)) != NULL)
+    {
+        removeChild(aChild, true);
+    }
+    
+    while ((aChild = this->getChildByTag(TAG_SPRITE)) != NULL)
+    {
+        removeChild(aChild, true);
+    }
+
+
+}
+
+bool baseRoom::distanceBetweenPoint(CCPoint p1, CCPoint p2){
+    float deltaX, deltaY;
+    deltaX = p2.x - p1.x;
+    deltaY = p2.y - p1.y;
+    
+    if((abs(deltaX) <= .80) && (abs(deltaY) <= .80))
+    {
+        return true;
+    }
+    else{
+        return false;
+    }
+    
+
+}
+
+void baseRoom::MenuButton()
+{
+    if((menuUp == false) && (target== NULL)){
+        menuBar->setZOrder(4);
+        menu_bar->setZOrder(5);
+        //menuBar->setPositionY(20 * sfy);
+        //menu_bar->setPositionY(10 * sfy);
+        //ArrowDown->setEnabled(false);
+        //ArrowDown->setZOrder(-1);
+        menuUp = true;
+    }
+    else{
+        menuBar->setZOrder(-1);
+        menu_bar->setZOrder(-1);
+    //menuBar->setPositionY(-7 * sfy);
+    //menu_bar->setPositionY(-22 * sfy);
+    
+    //crewButton->setPositionY(-10);
+    
+    
+    //ArrowDown->setEnabled(true);
+    //ArrowDown->setZOrder(7);
+        if(buttonPress)
+        {
+            crewStats();
+        }
+    menuUp = false;
+    }
+
+    
+
+}
+void baseRoom::fadeUP()
+{
+    inTransition = true;
+    CCMoveBy *slide = CCMoveBy::create(5, ccp(0, -400));
+    slide->initWithDuration(5, ccp(0,-400));
+    blueFade->runAction(slide);
+    inTransition = false;
+}
+;
+
+
