@@ -40,6 +40,13 @@ crew::crew(){
     daysOnSet = 0;
     g_x = 20;
     g_y = 30;
+    hireCost = 0;
+    dayRate = 0;
+    roleID = 0;
+    classID = 0;
+    role = "";
+    m_name = "";
+    m_class = "";
     
     char images[200];
     sprintf(images,image.c_str());

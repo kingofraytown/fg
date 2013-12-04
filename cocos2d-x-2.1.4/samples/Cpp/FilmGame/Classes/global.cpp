@@ -51,8 +51,16 @@ extern void getCrewFromDB(vector<int> crewlist)
     
     vector<vector<string> > result = db->query("SELECT * FROM crew;");
     //cout << result[0][2] << endl;
+    
+    //Remember to update when there is a schema change to the crew table
     int crewID = 0;
     int name = 1;
+    int f_class = 3;
+    int class_id = 2;
+    //int role = 4;
+    int roleID = 4;
+    int hirecost = 5;
+    int dayRate = 6;
     int skill = 7;
     int speed = 8;
     int focus = 9;
@@ -87,6 +95,10 @@ extern void getCrewFromDB(vector<int> crewlist)
         tempCrew->temperament.push_back(atoi(row.at(temp1).c_str()));
         tempCrew->temperament.push_back(atoi(row.at(temp2).c_str()));
         tempCrew->temperament.push_back( atoi(row.at(temp3).c_str()));
+        tempCrew->m_name = (row.at(name));
+        tempCrew->m_class = (row.at(f_class));
+        tempCrew->classID = atoi(row.at(class_id).c_str());
+        tempCrew->roleID = atoi(row.at(roleID).c_str());
         //assign texture filename
         cout << "images = " << row.at(image) << endl;
         

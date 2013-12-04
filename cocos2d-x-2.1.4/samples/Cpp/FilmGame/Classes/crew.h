@@ -48,7 +48,13 @@ class crew : public cocos2d::CCSprite
     activeFocus,
     activeConfidence,
     activeMorale,
-    activeSkill;
+    activeSkill,
+    hireCost,
+    dayRate,
+    roleID,
+    classID;
+    
+    
     
     //these values should be read in from the database as enum and then converted to ints when they are being assigned as member variables
     int tendPageOrder, tendPage, tendTypeOrder, tendType, tendGenreOrder, tendGenre;
@@ -56,7 +62,13 @@ class crew : public cocos2d::CCSprite
     
     //time variables
     int hoursOnSet, daysOnSet;
+    
     string image;
+    string role;
+    string m_name;
+    string m_class;
+    
+    
     
     //the boolean variable ‘yesterday’ should be called for stat bonuses
     bool yesterday, onSet, isSwitchingRooms, isGrabbed, isFlicked;
