@@ -11,6 +11,8 @@
 
 #include "cocos2d.h"
 #include "crew.h"
+#include "CCGestureRecognizer/CCGestureRecognizer.h"
+#include "CCGestureRecognizer/CCSwipeGestureRecognizer.h"
 using namespace cocos2d;
 class StartPage : public CCLayer
 {
@@ -20,22 +22,7 @@ public:
     
     // there's no 'id' in cpp, so we recommend to return the class instance pointer
     static cocos2d::CCScene* scene();
-    /* CCLabelTTF* Lstamina;
-     CCLabelTTF* Lspeed;
-     CCLabelTTF* Lskill;
-     CCLabelTTF* Lfocus;
-     CCLabelTTF* Lsocial;
-     CCLabelTTF* LbaseConfidence;
-     CCLabelTTF* Lstamina2;
-     CCLabelTTF* Lspeed2;
-     CCLabelTTF* Lskill2;
-     CCLabelTTF* Lfocus2;
-     CCLabelTTF* Lsocial2;
-     CCLabelTTF* LbaseConfidence2;
-     CCLabelTTF* Lroom;
-     CCLabelTTF* Lcontent;
-     CCLabelTTF* Lsize;
-     */
+ 
     vector<crew*> crewArray;
     vector<CCNode*> nodeArray;
     crew* target;
@@ -46,21 +33,42 @@ public:
     CCSprite* bottomBorder;
     CCSprite* rightBorder;
     CCSprite* leftBorder;
+    CCSprite* vertFilm;
+    CCSprite* horzFilm;
+    CCSprite* pLight1;
+    CCSprite* pLight2;
     
     CCSprite* rightArrow;
+    bool startAnimation;
+    bool nextReel;
+    bool enterGameReel;  
     
+    CCMenu* newGame;
+    CCMenu* loadGame;
+    CCMenu* playButton;
+    
+    CCMenuItemImage* startImage;
+    CCMenuItemImage* startImage2;
+    CCSwipeGestureRecognizer* SwipeGesture; 
     int roomCount;
+    int countDown;
     
     // a selector callback
     void menuCloseCallback(CCObject* pSender);
     
     void tempermentShift(vector<crew*>& cArray);
+    void PlayButton();
     
     virtual bool ccTouchBegan(CCTouch* touches, CCEvent* event);
     virtual void ccTouchMoved(CCTouch* touches, CCEvent* event);
     virtual void ccTouchEnded(CCTouch* touches, CCEvent* event);
     virtual void ccTouchesCancelled(CCSet* touches, CCEvent* event);
     virtual void update(float dt);
+    void handleSwipe(CCObject* obj);
+    void gestureBufferRight();
+    void gestureBufferLeft();
+    void gestureBufferDown();
+    void gestureBufferUp();
     void registerWithTouchDispatcher();
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(StartPage);

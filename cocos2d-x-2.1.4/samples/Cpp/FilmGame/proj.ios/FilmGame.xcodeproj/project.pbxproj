@@ -64,6 +64,10 @@
 		6CBBC58817E5415F00585D5B /* room_indoors2.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBBC58317E5415F00585D5B /* room_indoors2.png */; };
 		6CBBC58917E5415F00585D5B /* room_indoors3.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBBC58417E5415F00585D5B /* room_indoors3.png */; };
 		6CBBC58A17E5415F00585D5B /* room_indoors4.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CBBC58517E5415F00585D5B /* room_indoors4.png */; };
+		6CD2E68D185EC1DA00692BBE /* fstripVT.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CD2E68B185EC1DA00692BBE /* fstripVT.png */; };
+		6CD2E68E185EC1DA00692BBE /* fstripHR.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CD2E68C185EC1DA00692BBE /* fstripHR.png */; };
+		6CD2E690185EDAF700692BBE /* pLight.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CD2E68F185EDAF700692BBE /* pLight.png */; };
+		6CD2E6921860184E00692BBE /* clearButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6CD2E6911860184E00692BBE /* clearButton.png */; };
 		BF1373EF128A898400D9F789 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492D4B1289302400A09262 /* OpenGLES.framework */; };
 		BF1373F0128A899500D9F789 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492C21128924A800A09262 /* libxml2.dylib */; };
 		BF1373F1128A899E00D9F789 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492B6912891AC600A09262 /* libz.dylib */; };
@@ -179,6 +183,10 @@
 		6CBBC58317E5415F00585D5B /* room_indoors2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = room_indoors2.png; sourceTree = "<group>"; };
 		6CBBC58417E5415F00585D5B /* room_indoors3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = room_indoors3.png; sourceTree = "<group>"; };
 		6CBBC58517E5415F00585D5B /* room_indoors4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = room_indoors4.png; sourceTree = "<group>"; };
+		6CD2E68B185EC1DA00692BBE /* fstripVT.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fstripVT.png; sourceTree = "<group>"; };
+		6CD2E68C185EC1DA00692BBE /* fstripHR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fstripHR.png; sourceTree = "<group>"; };
+		6CD2E68F185EDAF700692BBE /* pLight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pLight.png; sourceTree = "<group>"; };
+		6CD2E6911860184E00692BBE /* clearButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearButton.png; sourceTree = "<group>"; };
 		781C33B11547F06B00633F88 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		781C33B31547F06B00633F88 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		781C33B51547F06B00633F88 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -304,6 +312,10 @@
 		784521C214EBA449009D533B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6CD2E6911860184E00692BBE /* clearButton.png */,
+				6CD2E68F185EDAF700692BBE /* pLight.png */,
+				6CD2E68B185EC1DA00692BBE /* fstripVT.png */,
+				6CD2E68C185EC1DA00692BBE /* fstripHR.png */,
 				6C9C7F9217F132360081786B /* orange_fade.png */,
 				6C9C7F9317F132370081786B /* red_fade.png */,
 				6C9C7F9417F132370081786B /* blue_fade.png */,
@@ -505,6 +517,10 @@
 				6C9C7F9717F132370081786B /* red_fade.png in Resources */,
 				6C9C7F9817F132370081786B /* blue_fade.png in Resources */,
 				6C9C7F9917F132370081786B /* green_fade.png in Resources */,
+				6CD2E68D185EC1DA00692BBE /* fstripVT.png in Resources */,
+				6CD2E68E185EC1DA00692BBE /* fstripHR.png in Resources */,
+				6CD2E690185EDAF700692BBE /* pLight.png in Resources */,
+				6CD2E6921860184E00692BBE /* clearButton.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

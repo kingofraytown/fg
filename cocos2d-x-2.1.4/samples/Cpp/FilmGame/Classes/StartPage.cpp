@@ -36,39 +36,11 @@ bool StartPage::init()
     {
         return false;
     }
-    scheduleUpdate();
+    this->schedule(schedule_selector(baseRoom::update));
+    countDown = 60;
+    enterGameReel = false;
     
-    //  if(crewMembers.size() == 0)
-    //{
-    //  initCrewMembers();
-    //}
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
-    
-    // add a "close" icon to exit the progress. it's an autorelease object
-    
-    /*CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-     "CloseNormal.png",
-     "CloseSelected.png",
-     this,
-     menu_selector(StartPage::menuCloseCallback) );
-     pCloseItem->setPosition( ccp(CCDirector::sharedDirector()->getWinSize().width - 20, 20) );
-     
-     // create menu, it's an autorelease object
-     CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
-     pMenu->setPosition( CCPointZero );
-     this->addChild(pMenu, 1);
-     */
-    
-    /////////////////////////////
-    // 3. add your codes below...
-    
-    // add a label shows "Hello World"
-    // create and initialize a label
-    //CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Thonburi", 34);
-    
-    // ask director the window size
+        // ask director the window size
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     sfx = size.width/480;
     sfy = size.height/320;
@@ -84,7 +56,47 @@ bool StartPage::init()
     
     // position the sprite on the center of the screen
     pSprite->setPosition( ccp(size.width/2, size.height/2) );
+    vertFilm = CCSprite::create("fstripVT.png");
+    vertFilm->setScaleX(.4 * sfx);
+    vertFilm->setScaleY(.4 * sfy);
+    vertFilm->setPosition(ccp((size.width/2) - (sfx * 160) , size.height + size.height));
+    this->addChild(vertFilm,2);
     
+    horzFilm = CCSprite::create("fstripHR.png");
+    horzFilm->setScaleX(.4 * sfx);
+    horzFilm->setScaleY(.4 * sfy);
+    horzFilm->setPosition(ccp((-1 * ((size.width/2) + sfx * 100)),(size.height/2)));
+    this->addChild(horzFilm,3);
+    
+    pLight1 = CCSprite::create("pLight.png");
+    pLight1->setScaleX(1 * sfx);
+    pLight1->setScaleY(1 * sfy);
+    pLight1->setPosition(ccp((size.width/2) - (sfx * 160) , size.height/2));
+    this->addChild(pLight1,-1);
+    
+    pLight2 = CCSprite::create("pLight.png");
+    pLight2->setScaleX(1 * sfx);
+    pLight2->setScaleY(1 * sfy);
+    pLight2->setPosition(ccp((size.width/2) , size.height/2));
+    this->addChild(pLight2,-1);
+
+    startImage = CCMenuItemImage::create("clearButton.png", "clearButton.png", this, menu_selector(StartPage::PlayButton));
+    startImage->setPosition(ccp(0,0));
+    startImage->setScaleX(.2* sfx);
+    startImage->setScaleY(.2* sfy);
+    playButton = CCMenu::create(startImage, NULL);
+    playButton->setPosition(ccp((size.width/2) - (sfx * 160) , size.height/2));
+    this->addChild(playButton,0);
+    
+    
+    startImage2 = CCMenuItemImage::create("clearButton.png", "clearButton.png", this, menu_selector(StartPage::PlayButton));
+    startImage2->setPosition(ccp(0,0));
+    startImage2->setScaleX(.2* sfx);
+    startImage2->setScaleY(.2* sfy);
+
+    newGame = CCMenu::create(startImage2, NULL);
+    newGame->setPosition(ccp(size.width/2, size.height/2));
+    this->addChild(newGame, 0);
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
     
@@ -174,7 +186,14 @@ bool StartPage::init()
      CCLabelTTF *LscreenV = CCLabelTTF::create(text, "Thonburi", 16);
      LscreenV->setPosition(ccp(130.0, 100.0));
      */
-    
+    //***************init swipe gesture*****************
+    //CCArray* gestArray = cocos2d::CCArray::create();
+    SwipeGesture = CCSwipeGestureRecognizer::create();
+    SwipeGesture->setTarget(this, callfuncO_selector(StartPage::handleSwipe));
+    SwipeGesture->setDirection(kSwipeGestureRecognizerDirectionDown | kSwipeGestureRecognizerDirectionUp | kSwipeGestureRecognizerDirectionLeft);
+    SwipeGesture->setCancelsTouchesInView(true);
+    this->addChild(SwipeGesture);
+
         
     
     this->setTouchEnabled(true);
@@ -294,22 +313,125 @@ void StartPage::menuCloseCallback(CCObject* pSender)
 
 void StartPage::update(float dt)
 {
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
     //test for crew leaving to the left room
-    for(int k = 0;k < room1crew.size();k++)
-    {
-        if(room1crew[k]->getg_x() < 10){
-            room1crew[k]->setg_x(440);
-            room1crew[k]->setPositionX(room1crew[k]->getg_x());
-            CCPoint p = room1crew[k]->getPosition();
-            //float b = room1crew[k]->g_x;
-            cout << room1crew[k] << endl;
-            room1crew[k]->isSwitchingRooms = true;
-            room2crew.push_back(room1crew[k]);
-            //room2crew[k]->setPositionX(room2crew)
-            removeChild(room1crew[k]);
-            room1crew.erase(room1crew.begin()+k);
-            
-        }
+    if(countDown >= 0){
+        countDown--;
     }
     
+    if(countDown == 30){
+        pLight1->setZOrder(1);
+    }
+    
+    if(countDown == 0){
+        CCActionInterval*  actionBy = CCMoveTo::create(1, ccp((size.width/2) - (sfx * 160) , size.height/2));
+        vertFilm->runAction(actionBy);
+        playButton->setZOrder(4);
+        
+    }
 }
+
+void StartPage::PlayButton(){
+    if(!enterGameReel){
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    CCActionInterval*  actionBy = CCMoveTo::create(1.2, ccp((size.width/2), size.height/2));
+    horzFilm->runAction(actionBy);
+    newGame->setZOrder(5);
+    pLight2->setZOrder(1);
+    enterGameReel = true;
+    }
+
+}
+
+void StartPage::handleSwipe(CCObject* obj)
+{
+    CCSwipe * swipe = (CCSwipe*)obj;
+        if(swipe->direction == kSwipeGestureRecognizerDirectionUp){
+            
+            cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+            //this->removeChild(SwipeGesture);
+            gestureBufferDown();
+        }
+        
+        if(swipe->direction == kSwipeGestureRecognizerDirectionDown){
+            //swipe->release();
+            
+            cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+            gestureBufferUp();
+
+        }
+    
+    
+        if(swipe->direction == kSwipeGestureRecognizerDirectionLeft){
+            //swipe->release();
+        
+            cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+            gestureBufferLeft();
+
+        }
+
+}
+
+
+void StartPage::gestureBufferUp(){
+
+        
+        /*CCCallFunc* startNext=CCCallFunc::create( this,
+                                                 callfunc_selector(baseRoom::switchUp) );
+        
+        CCMoveBy *slide = CCMoveBy::create(0.2, ccp(0, -350 * sfy));
+        
+        CCSequence* act =CCSequence::create(slide, startNext, NULL);
+        blueFade->runAction(act);
+    */
+    //switchUp();
+}
+
+void StartPage::gestureBufferDown(){
+    
+    
+    /*CCCallFunc* startNext=CCCallFunc::create( this,
+     callfunc_selector(baseRoom::switchUp) );
+     
+     CCMoveBy *slide = CCMoveBy::create(0.2, ccp(0, -350 * sfy));
+     
+     CCSequence* act =CCSequence::create(slide, startNext, NULL);
+     blueFade->runAction(act);
+     */
+    //switchUp();
+}
+
+void StartPage::gestureBufferRight(){
+    
+    
+    /*CCCallFunc* startNext=CCCallFunc::create( this,
+     callfunc_selector(baseRoom::switchUp) );
+     
+     CCMoveBy *slide = CCMoveBy::create(0.2, ccp(0, -350 * sfy));
+     
+     CCSequence* act =CCSequence::create(slide, startNext, NULL);
+     blueFade->runAction(act);
+     */
+    //switchUp();
+}
+
+void StartPage::gestureBufferLeft(){
+    
+    cout<< "swipe left" << endl;
+    if(enterGameReel){
+        CCSize size = CCDirector::sharedDirector()->getWinSize();
+        CCActionInterval*  actionBy = CCMoveTo::create(1, ccp((-1 * ((size.width/2) + sfx * 100)),(size.height/2)));
+        horzFilm->runAction(actionBy);
+        enterGameReel = false;
+    }
+    /*CCCallFunc* startNext=CCCallFunc::create( this,
+     callfunc_selector(baseRoom::switchUp) );
+     
+     CCMoveBy *slide = CCMoveBy::create(0.2, ccp(0, -350 * sfy));
+     
+     CCSequence* act =CCSequence::create(slide, startNext, NULL);
+     blueFade->runAction(act);
+     */
+    //switchUp();
+}
+
