@@ -52,13 +52,13 @@ class crew : public cocos2d::CCSprite
     hireCost,
     dayRate,
     roleID,
-    classID;
-    
-    
+    classID,
+    abilityID;
+        
     
     //these values should be read in from the database as enum and then converted to ints when they are being assigned as member variables
     int tendPageOrder, tendPage, tendTypeOrder, tendType, tendGenreOrder, tendGenre;
-    enum pageLength {Short = 0, Length = 1};
+    enum pageLength {Short = 0, Long = 1};
     
     //time variables
     int hoursOnSet, daysOnSet;
@@ -125,7 +125,6 @@ public: void setTexture(string texture);
     
     
     int chStamina();
-    
     int chConfidenceHour();
     int chConfidenceDay();
     int resetConfidence();
@@ -140,7 +139,9 @@ public: void setTexture(string texture);
     void onGrab(CCPoint p);
     void onRelease();
     void vectorPush();
-
+    static int convertType(string strType);
+    static int convertGenre(string strType);
+    static int convertLength(string strType);
 
 
 };

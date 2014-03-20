@@ -1153,6 +1153,7 @@ void baseRoom::loadGame()
     //get write path
     string path = CCFileUtils::sharedFileUtils()->getWritablePath();
     
+    
     //append file name
     path.append("saveGame.xml");
     cout << path << endl;
@@ -1178,13 +1179,15 @@ void baseRoom::loadGame()
         TiXmlElement* yCoord;
         TiXmlElement* cID;
         TiXmlElement* tempElem;
+        const TiXmlNode* addOne = new TiXmlElement("addOne");
+        //addOne->SetAttribute("name2", "I did it!");
         
         int cid;
         float gy, gx;
         pElem=hdoc.FirstChildElement().Element();
         hroot=TiXmlHandle(pElem);
         //int i = 0;
-        pElem=hroot.FirstChild( "crew" ).FirstChild().Element();
+        pElem=hroot.FirstChild("crew").FirstChild().Element();
         for( pElem=hroot.FirstChild( "crew" ).Element(); pElem; pElem=pElem->NextSiblingElement()){
             //tempElement
             tempElem = pElem;
@@ -1200,6 +1203,7 @@ void baseRoom::loadGame()
             
             //pElem = pElem->NextSiblingElement();
         yCoord = pElem->FirstChild()->NextSiblingElement()->NextSiblingElement()->NextSiblingElement();
+            yCoord->Parent()->InsertAfterChild(xCoord, *addOne);
             // get the crew ID for matching
             //cID = pElem->NextSiblingElement();
             //const char* xv = xCoord->Value();
@@ -1222,7 +1226,7 @@ void baseRoom::loadGame()
                       
         }
         
-        
+        doc.SaveFile(path.c_str());
     }
     else{
         cout << "load failed" << endl;

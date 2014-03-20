@@ -47,6 +47,7 @@ crew::crew(){
     role = "";
     m_name = "";
     m_class = "";
+    abilityID = 0;
     
     char images[200];
     sprintf(images,image.c_str());
@@ -580,6 +581,134 @@ void crew::vectorPush()
     g_y = g_y + (direction[1] * vectorSpeed);
     this->setPosition(ccp(g_x,g_y));
     
+}
+
+int crew::convertType(string strType)
+{
+    int eValue = -1;
+    
+    if(strType == "Short Film")
+    {
+        eValue = 1;
+    }
+    
+    if(strType == "Commercial")
+    {
+        eValue = 2;
+        
+    }
+    
+    if(strType == "Feature")
+    {
+        eValue = 3;
+    }
+    
+    return eValue;
+}
+
+int crew::convertGenre(string strType)
+{
+    int eValue = -1;
+    
+    if(strType == "Action")
+    {
+        eValue = 0;
+    }
+    
+    if(strType == "Adventure")
+    {
+        eValue = 1;
+    }
+    
+    if(strType == "Comedy")
+    {
+        eValue = 2;
+    }
+    
+    if(strType == "Children")
+    {
+        eValue = 3;
+    }
+    
+    if(strType == "Romance")
+    {
+        eValue = 4;
+    }
+    
+    if(strType == "Thriller")
+    {
+        eValue = 5;
+    }
+    
+    if(strType == "Horror")
+    {
+        eValue = 6;
+    }
+    
+    if(strType == "Heist")
+    {
+        eValue = 7;
+        
+    }
+    
+    if(strType == "Period")
+    {
+        eValue = 8;
+    }
+    
+    if(strType == "Indie")
+    {
+        eValue = 9;
+        
+    }
+    
+    if(strType == "Cerebral")
+    {
+        eValue = 10;
+    }
+    
+    if(strType == "Documentary")
+    {
+        eValue = 11;
+        
+    }
+    
+    if(strType == "Fantasy")
+    {
+        eValue = 12;
+    }
+    
+    if(strType == "Scifi")
+    {
+        eValue = 13;
+        
+    }
+    
+    if(strType == "Experimental")
+    {
+        eValue = 14;
+    }
+
+
+    return eValue;
+}
+
+int crew::convertLength(string strType)
+{
+    int eValue = -1;
+    
+    if(strType == "Short")
+    {
+        eValue = 0;
+    }
+    
+    if(strType == "Long")
+    {
+        eValue = 1;
+        
+    }
+    
+    return eValue;
 }
 
 

@@ -13,6 +13,7 @@
 #include "crew.h"
 #include "CCGestureRecognizer/CCGestureRecognizer.h"
 #include "CCGestureRecognizer/CCSwipeGestureRecognizer.h"
+
 using namespace cocos2d;
 class StartPage : public CCLayer
 {
@@ -46,19 +47,22 @@ public:
     CCMenu* newGame;
     CCMenu* loadGame;
     CCMenu* playButton;
+    //CCMenu* loadGame;
     
     CCMenuItemImage* startImage;
     CCMenuItemImage* startImage2;
+    CCMenuItemImage* startImage3;
     CCSwipeGestureRecognizer* SwipeGesture; 
     int roomCount;
     int countDown;
-    
+    int gamesFilesCount;
     // a selector callback
     void menuCloseCallback(CCObject* pSender);
     
     void tempermentShift(vector<crew*>& cArray);
     void PlayButton();
-    
+    void NewGameButton();
+    void LoadGameButton();
     virtual bool ccTouchBegan(CCTouch* touches, CCEvent* event);
     virtual void ccTouchMoved(CCTouch* touches, CCEvent* event);
     virtual void ccTouchEnded(CCTouch* touches, CCEvent* event);
@@ -70,6 +74,8 @@ public:
     void gestureBufferDown();
     void gestureBufferUp();
     void registerWithTouchDispatcher();
+    bool checkSavedGame();
+    void makeSaveGameCounter();
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(StartPage);
 };

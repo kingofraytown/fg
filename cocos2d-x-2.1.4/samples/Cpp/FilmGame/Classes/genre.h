@@ -26,7 +26,7 @@ class genre : public cocos2d::CCSprite
         float post, pre, ge, cast, sound, camera, art;
         int m_genre;
     
-        enum Genres {
+        enum GenresEnum {
             action,
             adventure,
             comedy,
@@ -44,7 +44,7 @@ class genre : public cocos2d::CCSprite
             experimental
         };
     
-    genre(Genres g);
+    genre(GenresEnum g);
     
     
 };

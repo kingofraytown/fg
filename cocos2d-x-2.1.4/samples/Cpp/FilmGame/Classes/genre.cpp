@@ -8,7 +8,7 @@
 
 #include "genre.h"
 
-genre::genre(Genres g){
+genre::genre(GenresEnum g){
     m_genre = g;
     
     switch (g) {
@@ -29,7 +29,6 @@ genre::genre(Genres g){
             cast = 0.8;
             camera = 1.1;
             sound = 0.8;
-
             art = 0;
             break;
         case comedy:

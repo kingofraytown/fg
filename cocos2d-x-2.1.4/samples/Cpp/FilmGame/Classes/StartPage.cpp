@@ -4,6 +4,9 @@
 #include "global.h"
 //#include "GreenRoom.h"
 #include "StartPage.h"
+#include "worldmap.h"
+#include "loadGame.h"
+#include "tinyxml/tinyxml.h"
 
 
 
@@ -39,7 +42,7 @@ bool StartPage::init()
     this->schedule(schedule_selector(baseRoom::update));
     countDown = 60;
     enterGameReel = false;
-    
+    gamesFilesCount = 0;
         // ask director the window size
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     sfx = size.width/480;
@@ -88,8 +91,13 @@ bool StartPage::init()
     playButton->setPosition(ccp((size.width/2) - (sfx * 160) , size.height/2));
     this->addChild(playButton,0);
     
-    
-    startImage2 = CCMenuItemImage::create("clearButton.png", "clearButton.png", this, menu_selector(StartPage::PlayButton));
+    if(!checkSavedGame())
+    {
+        makeSaveGameCounter();
+    }
+
+    if(gamesFilesCount < 3){
+    startImage2 = CCMenuItemImage::create("clearButton.png", "clearButton.png", this, menu_selector(StartPage::NewGameButton));
     startImage2->setPosition(ccp(0,0));
     startImage2->setScaleX(.2* sfx);
     startImage2->setScaleY(.2* sfy);
@@ -97,6 +105,20 @@ bool StartPage::init()
     newGame = CCMenu::create(startImage2, NULL);
     newGame->setPosition(ccp(size.width/2, size.height/2));
     this->addChild(newGame, 0);
+    }
+    
+    if(gamesFilesCount > 0){
+    startImage3 = CCMenuItemImage::create("clearButton.png", "clearButton.png", this, menu_selector(StartPage::LoadGameButton));
+    startImage3->setPosition(ccp(0,0));
+    startImage3->setScaleX(.2* sfx);
+    startImage3->setScaleY(.2* sfy);
+    
+    loadGame = CCMenu::create(startImage3, NULL);
+    loadGame->setPosition(ccp((size.width/2) + (sfx *100), size.height/2));
+    this->addChild(loadGame, 0);
+    }
+
+
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
     
@@ -197,6 +219,7 @@ bool StartPage::init()
         
     
     this->setTouchEnabled(true);
+    
     return true;
 }
 
@@ -248,7 +271,13 @@ void StartPage::ccTouchEnded( CCTouch *touch, CCEvent *event){
     
     if(button->boundingBox().containsPoint(location))
     {
-        initCrewMembers();
+        //initCrewMembers();
+        mapCrewVector();
+        makeGenreMap();
+        rConfig = new roomConfig();
+
+        vector<int> crewlist = {1,2,3,4};
+        CrewVectors.at("room1crew") = getCrewFromDB(crewlist);
         rConfig->printConfig();
         baseRoom* firstRoom;
         cout << "firstroom = " << firstRoom << endl;
@@ -336,13 +365,27 @@ void StartPage::PlayButton(){
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     CCActionInterval*  actionBy = CCMoveTo::create(1.2, ccp((size.width/2), size.height/2));
     horzFilm->runAction(actionBy);
-    newGame->setZOrder(5);
+        if(gamesFilesCount < 4){
+            newGame->setZOrder(5);
+        }
+        if(gamesFilesCount > 1){
+            
+            loadGame->setZOrder(5);
+        }
     pLight2->setZOrder(1);
     enterGameReel = true;
     }
 
 }
+void StartPage::NewGameButton(){
+    
+    makeNewGameFile();
+            makeGenreMap();
+    CCScene* wMap = worldmap::scene();
+    CCDirector::sharedDirector()->replaceScene(wMap);
 
+    
+}
 void StartPage::handleSwipe(CCObject* obj)
 {
     CCSwipe * swipe = (CCSwipe*)obj;
@@ -433,5 +476,71 @@ void StartPage::gestureBufferLeft(){
      blueFade->runAction(act);
      */
     //switchUp();
+}
+
+bool StartPage::checkSavedGame(){
+    bool fileExist = false;
+    
+    //get write path
+    string path = CCFileUtils::sharedFileUtils()->getWritablePath();
+
+    
+    //append file name
+    path.append("GameCount.xml");
+    //cout << path << endl;
+    
+    TiXmlDocument doc(path.c_str());
+    
+    fileExist = doc.LoadFile();
+    if(fileExist){
+        TiXmlElement* pElem;
+        TiXmlHandle hroot(0);
+        TiXmlHandle hdoc(&doc);
+    
+    
+    
+        pElem=hdoc.FirstChildElement().Element();
+        hroot=TiXmlHandle(pElem);
+    
+        pElem=hroot.FirstChild("Count").Element();
+    
+        gamesFilesCount = atoi(pElem->Attribute("games"));
+    }
+
+    
+    return fileExist;
+}
+
+void StartPage::makeSaveGameCounter(){
+    //get write path
+    string path = CCFileUtils::sharedFileUtils()->getWritablePath();
+    
+    //append file name
+    path.append("GameCount.xml");
+    cout << path << endl;
+    
+    //*********************************
+    TiXmlDocument *doc = new TiXmlDocument();
+    
+    //declearation
+    TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
+    doc->LinkEndChild( decl );
+    
+    //root
+    TiXmlElement* root = new TiXmlElement("root");
+    doc->LinkEndChild(root);
+    TiXmlElement* production = new TiXmlElement("Count");
+    production->SetAttribute("games", 0);
+    root->LinkEndChild(production);
+    
+    
+    doc->SaveFile(path.c_str());
+    
+}
+
+void StartPage::LoadGameButton()
+{
+    CCScene* lGame = loadGame::scene();
+    CCDirector::sharedDirector()->replaceScene(lGame);
 }
 
