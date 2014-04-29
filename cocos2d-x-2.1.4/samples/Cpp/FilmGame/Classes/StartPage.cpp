@@ -39,10 +39,11 @@ bool StartPage::init()
     {
         return false;
     }
-    this->schedule(schedule_selector(baseRoom::update));
+    this->schedule(schedule_selector(StartPage::update));
     countDown = 60;
     enterGameReel = false;
     gamesFilesCount = 0;
+    makeGenreMap();
         // ask director the window size
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     sfx = size.width/480;
@@ -368,7 +369,7 @@ void StartPage::PlayButton(){
         if(gamesFilesCount < 4){
             newGame->setZOrder(5);
         }
-        if(gamesFilesCount > 1){
+        if(gamesFilesCount > 0){
             
             loadGame->setZOrder(5);
         }
@@ -380,8 +381,9 @@ void StartPage::PlayButton(){
 void StartPage::NewGameButton(){
     
     makeNewGameFile();
-            makeGenreMap();
-    CCScene* wMap = worldmap::scene();
+    
+    makeGenreMap();
+    CCScene* wMap = loadGame::scene();
     CCDirector::sharedDirector()->replaceScene(wMap);
 
     

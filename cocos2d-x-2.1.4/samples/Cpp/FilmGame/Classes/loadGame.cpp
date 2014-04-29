@@ -209,7 +209,7 @@ void loadGame::update(float dt)
        
 }
 
-void loadGame::makeScript(){
+/*void loadGame::makeScript(){
     //choose a number between 101 and 110
     srand( time(NULL));
 	int roll = rand() % 9 + 101; //range 1 to 3
@@ -220,6 +220,7 @@ void loadGame::makeScript(){
     scriptVector.push_back(newScript);
     //Script::titleBuilder();
 }
+ */
 void loadGame::NewGameButton(){
     makeNewGameFile();
     
@@ -321,6 +322,8 @@ void loadGame::loadGame1()
         loadScripts(fName);
         //load crew to gloable
         loadCrew(fName);
+        //load equipment
+        loadEquipment(fName);
         //load current production
         
         //load progress data
@@ -348,6 +351,8 @@ void loadGame::loadGame2()
         loadScripts(fName);
         //load crew to gloable
         loadCrew(fName);
+        //load equipment
+        loadEquipment(fName);
         //load current production
         
         //load progress data
@@ -375,6 +380,8 @@ void loadGame::loadGame3()
         loadScripts(fName);
         //load crew to gloable
         loadCrew(fName);
+        //load equipment
+        loadEquipment(fName);
         //load current production
         
         //load progress data

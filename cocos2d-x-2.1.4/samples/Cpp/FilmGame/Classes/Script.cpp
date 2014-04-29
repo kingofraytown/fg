@@ -18,7 +18,9 @@ Script::Script()
 }
 Script::Script(vector<crew*> Authors)
 {
-    
+    if (!xmlLock)
+    {
+        xmlLock = true;
     scriptAuthors = Authors;
     //get type
 	collaborateType(Authors);
@@ -48,8 +50,23 @@ Script::Script(vector<crew*> Authors)
     
 	//make script title
     
-    titleBuilder();
+    title = titleBuilder();
+        bool samething = false;
+        for(int i = 0; i < scriptVector.size(); i++)
+        {
+            if(scriptVector[i]->title == this->title)
+            {
+                samething = true;
+            }
+        }
+        if(!samething){
+            scriptVector.push_back(this);
+        }
     
+        
+        
+        xmlLock = false;
+    }
 }
 
 

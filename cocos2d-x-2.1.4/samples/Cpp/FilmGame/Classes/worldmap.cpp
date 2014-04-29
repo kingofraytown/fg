@@ -12,7 +12,8 @@
 #include "global.h"
 #include "worldmap.h"
 #include "ProductionOffice.h"
-
+#include "TableViewTestScene.h"
+#include "StartPage.h"
 
 
 using namespace cocos2d;
@@ -65,7 +66,7 @@ bool worldmap::init()
     pSprite->setAnchorPoint(ccp(0,0 ));
     pSprite->setScale(0.4);
     
-    startImage = CCMenuItemImage::create("po_button.png", "po_button.png", this, menu_selector(worldmap::ProductionOfficeButton));
+    startImage = CCMenuItemImage::create("po_button.png", "po_button_down.png", this, menu_selector(worldmap::ProductionOfficeButton));
     startImage->setPosition(ccp(0,0));
     startImage->setScaleX(sfx);
     startImage->setScaleY(sfy);
@@ -74,7 +75,7 @@ bool worldmap::init()
     poButton->setPosition(ccp(size.width/2,(size.height/2) + (100 * sfy)));
     this->addChild(poButton, 1);
     
-    startImage2 = CCMenuItemImage::create("script_button.png", "script_button.png", this, menu_selector(worldmap::makeScript));
+    startImage2 = CCMenuItemImage::create("script_button.png", "script_button_down.png", this, menu_selector(worldmap::makeScript));
     startImage2->setPosition(ccp(0,0));
     startImage2->setScaleX(sfx);
     startImage2->setScaleY(sfy);
@@ -100,7 +101,16 @@ bool worldmap::init()
     roomCount = 0;
     //make some crew members
     
+    //******************BACK BUTTON*********************
+    backImage = CCMenuItemImage::create("back_button.png", "back_button.png", this, menu_selector(worldmap::goback));
+    backImage->setPosition(ccp(0,0));
+    backImage->setScaleX(0.8 * sfx);
+    backImage->setScaleY(0.8 * sfy);
     
+    backButton = CCMenu::create(backImage, NULL);
+    backButton->setPosition(ccp((30 * sfx) , (30 * sfy)));
+    this->addChild(backButton, 2);
+
     
     
     //***************init swipe gesture*****************
@@ -197,12 +207,19 @@ void worldmap::makeScript(){
     vector<int> writers = {roll};
     
     Script * newScript = new Script(getCrewFromDB(writers));
-    scriptVector.push_back(newScript);
+    //scriptVector.push_back(newScript);
     //Script::titleBuilder();
 }
 void worldmap::ProductionOfficeButton(){
+    if(!xmlLock){
+    CCScene * lastscene = worldmap::scene();
+    //cout << "lastscene retain count = " << lastscene->retainCount() << endl;
+    lastscene->retain();
+    previousScene = lastscene;
+    //cout << "lastscene retain count = " << lastscene->retainCount() << endl;
     CCScene* po = ProductionOffice::scene();
     CCDirector::sharedDirector()->replaceScene(po);
+    }
 
 }
 void worldmap::handleSwipe(CCObject* obj)
@@ -210,7 +227,7 @@ void worldmap::handleSwipe(CCObject* obj)
     CCSwipe * swipe = (CCSwipe*)obj;
     if(swipe->direction == kSwipeGestureRecognizerDirectionUp){
         
-        cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+        //cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
         //this->removeChild(SwipeGesture);
         gestureBufferDown();
     }
@@ -218,7 +235,7 @@ void worldmap::handleSwipe(CCObject* obj)
     if(swipe->direction == kSwipeGestureRecognizerDirectionDown){
         //swipe->release();
         
-        cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+       // cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
         gestureBufferUp();
         
     }
@@ -227,7 +244,7 @@ void worldmap::handleSwipe(CCObject* obj)
     if(swipe->direction == kSwipeGestureRecognizerDirectionLeft){
         //swipe->release();
         
-        cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
+        //cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
         gestureBufferLeft();
         
     }
@@ -267,3 +284,14 @@ void worldmap::gestureBufferLeft(){
 
    
 }
+
+void worldmap::goback()
+{
+    scriptVector.clear();
+    crewList.clear();
+    CCScene * sp = StartPage::scene();
+    sp->retain();
+    CCDirector::sharedDirector()->replaceScene(sp);
+    
+}
+

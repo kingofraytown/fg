@@ -43,6 +43,9 @@ public:
     CCMenu* newGame;
     CCMenu* scriptButton;
     CCMenu* poButton;
+    CCMenu* backButton;
+    //CCTableView* tableView;
+    CCMenuItemImage* backImage;
     
     CCMenuItemImage* startImage;
     CCMenuItemImage* startImage2;
@@ -67,6 +70,7 @@ public:
     void gestureBufferDown();
     void gestureBufferUp();
     void registerWithTouchDispatcher();
+    void goback();
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(worldmap);
     };

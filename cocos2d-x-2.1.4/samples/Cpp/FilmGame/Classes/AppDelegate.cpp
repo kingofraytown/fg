@@ -12,6 +12,7 @@
 #include "cocos2d.h"
 #include "HelloWorldScene.h"
 #include "StartPage.h"
+#include "TestGame.h"
 
 USING_NS_CC;
 
