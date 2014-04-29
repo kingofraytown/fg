@@ -19,9 +19,12 @@ crewInfo::crewInfo()
     prodBonus->setObject(holder, "CONFIDENCE");
     prodBonus->setObject(holder, "FOCUS");
     prodBonus->setObject(holder, "MORALE");
-    room = "";
+    /*room = "";
     g_x = 0;
-    g_y = 0;
+    g_y = 0;*/
+    
+    daysOnSet = 0;
+    crewId = 0;
     
 
 }

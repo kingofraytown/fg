@@ -33,45 +33,92 @@ using namespace cocos2d::extension;
  
  };*/
 
+class PShot : public CCObject
+{
+    public:
+    float shotScore;
+    bool currentShot;
+    bool completed;
+    
+    PShot();
+    
+};
+
+class PScene : public CCObject
+{
+public:
+    int sceneID;
+    int location;
+    bool currentScene;
+    bool completed;
+    float sceneScore;
+    CCArray shotList; //should hold PShot objects
+    
+    PScene();
+    
+};
+
+
 class Production : public CCLayer
 {
 public:
 
 //Script Data
 //number of pages
-    int
+    int numberOfPages;
 //number of scenes
+    int numberOfScene;
 //number of completed scenes with scores (key value pair)
-//current scene with scores so far (key value pair)
+    CCArray productionScenes;
+    
+    int completedScenes;
+    //current scene with scores so far (key value pair)
+    PScene currentScene;
+    
 //current shot (last unfinished shot)
+    PShot currentShot;
 //script difficulty (total possible points)
+    float scriptScore;
 //script name
+    string scriptName;
 
 //Crew Data
-//class sheet (array or vector of objects of the following)
-//crewID
-//days on set
-//stat production bonus (from being on set so many days)
-
+    
+//call sheet (array or vector of objects of the following)
+    CCArray callSheet; //use crewInfo
 //Management Data
+    
 //current budget
+    float currentBudget;
+    
 //x days of production (total amount of days)
-//current day of production
+    int daysOfProduction;
+    
 //nth hour of current day
+    int hourOfDay;
 //locations
+    CCArray locations;
 //current location
+    int currentLocation;
+    string strLocation;
 //goal number of shoot days
-
+    int goalNumberShootDays;
 //Equipment
 //Equipment List (array or vector)
-//EquipmentID
-//quantity
+    CCArray ProductionEquipment; //fill equipment objects
 
-//2. Functions that can update the production object
-//Update the progress into the script
+
+    
+public:
+    //2. Functions that can update the production object
+    //Update the progress into the script
 //completed scenes (add to list)
+    void updateCompletedScene(PScene* tScene);// update the current scene to complete
 //scores on completed scenes
+    void updateCompletedSceneScore(PScene* tScene); // add all the shot scores and assign that value to scene score
 //current scene
+    void updateCurrentScene(PScene* tScene); //pass in a scene and change the scene's currentScene member to true. Then get the 'currentScene' and set its current flag to false. Then set 'currentSence' to the scene that was passed in
+
 //shots for current scene
 //completion statuses of current shots with scores
 

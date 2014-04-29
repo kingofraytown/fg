@@ -15,11 +15,12 @@ using namespace cocos2d;
 class crewInfo : public cocos2d::CCNode
 {
 public:
-    CCInteger* crewId;
+    int crewId;
+    int daysOnSet;
     CCDictionary* prodBonus;
-    CCString room;
+    /*CCString room;
     CCFloat* g_x;
-    CCFloat* g_y;
+    CCFloat* g_y;*/
     
 public: crewInfo();
     
