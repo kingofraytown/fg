@@ -120,14 +120,18 @@ public:
     void updateCurrentScene(PScene* tScene); //pass in a scene and change the scene's currentScene member to true. Then get the 'currentScene' and set its current flag to false. Then set 'currentSence' to the scene that was passed in
 
 //shots for current scene
-//completion statuses of current shots with scores
+	float shotsInScene(PScene* tScene); //return the number of shots in the scene
 
+	void updateCompletedShot(PShot* tShot);// update the current shots to complete
+//scores on completed scenes
+    void updateCompletedShotScore(PShot* tShot); // add all the shot shots and assign that value to scene score
+//current scene
 
-//Update crew stats
+//Update crew productive bonus stats
+	void updateCrewStats(crew* tCrew); //get the crew object's production stat bonuses and copy to crewInfo object with the same ID
 //update days on set
-//update production stat bonus
+	void updateDaysOnSet(); //increament the DaysOnSet membervariable;
 
-//Update Location
 //Update Budget
 
 //3. Functions to set member variables
@@ -137,13 +141,10 @@ public:
 //set Budget
 //set Locations
 //set FilmName
+	void SetFilmName(string s);
 //set Days To Shoot
 
-//4. Functions to write to xml file
-//Make template of production xml structure so that section of it will just need to be populated
-//add node to section
-//assign section attribute a value
-//assign node attribute a value
+
 };
 
 

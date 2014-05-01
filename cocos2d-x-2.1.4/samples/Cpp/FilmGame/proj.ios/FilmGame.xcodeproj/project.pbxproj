@@ -27,6 +27,7 @@
 		6C3AC28817C5A96C007833F8 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C3AC22117C5A96C007833F8 /* tinyxmlerror.cpp */; };
 		6C3AC28917C5A96C007833F8 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C3AC22217C5A96C007833F8 /* tinyxmlparser.cpp */; };
 		6C40D7B3190FD54C00CDB8C7 /* Production.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C40D7B1190FD54B00CDB8C7 /* Production.cpp */; };
+		6C40D7B61910968100CDB8C7 /*  PreUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C40D7B41910968000CDB8C7 /*  PreUtility.cpp */; };
 		6C49D32918D7D88900D8F2C1 /* ProductionOffice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C49D32718D7D88900D8F2C1 /* ProductionOffice.cpp */; };
 		6C49D32B18D7E9B500D8F2C1 /* po_room_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C49D32A18D7E9B500D8F2C1 /* po_room_bg.png */; };
 		6C51468518FF8DCE00AF4426 /* script_room_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C51468318FF8DCE00AF4426 /* script_room_bg.png */; };
@@ -196,6 +197,8 @@
 		6C3AC22217C5A96C007833F8 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		6C40D7B1190FD54B00CDB8C7 /* Production.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Production.cpp; sourceTree = "<group>"; };
 		6C40D7B2190FD54B00CDB8C7 /* Production.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Production.h; sourceTree = "<group>"; };
+		6C40D7B41910968000CDB8C7 /*  PreUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = " PreUtility.cpp"; sourceTree = "<group>"; };
+		6C40D7B51910968000CDB8C7 /*  PreUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = " PreUtility.h"; sourceTree = "<group>"; };
 		6C49D32718D7D88900D8F2C1 /* ProductionOffice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ProductionOffice.cpp; sourceTree = "<group>"; };
 		6C49D32818D7D88900D8F2C1 /* ProductionOffice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductionOffice.h; sourceTree = "<group>"; };
 		6C49D32A18D7E9B500D8F2C1 /* po_room_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = po_room_bg.png; sourceTree = "<group>"; };
@@ -714,6 +717,8 @@
 				6CD5C819190C201C0067BE41 /* store1.h */,
 				6C40D7B1190FD54B00CDB8C7 /* Production.cpp */,
 				6C40D7B2190FD54B00CDB8C7 /* Production.h */,
+				6C40D7B41910968000CDB8C7 /*  PreUtility.cpp */,
+				6C40D7B51910968000CDB8C7 /*  PreUtility.h */,
 			);
 			name = Classes;
 			path = ../Classes;
@@ -944,6 +949,7 @@
 				6CD5C817190C0CA10067BE41 /* BaseStore.cpp in Sources */,
 				6CD5C81A190C201C0067BE41 /* store1.cpp in Sources */,
 				6C40D7B3190FD54C00CDB8C7 /* Production.cpp in Sources */,
+				6C40D7B61910968100CDB8C7 /*  PreUtility.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
