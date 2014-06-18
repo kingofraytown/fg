@@ -17,12 +17,17 @@ std::vector<crew*> room1crew;
 std::vector<crew*> room2crew;
 std::vector<crew*> room3crew;
 std::vector<crew*> room4crew;
-std::vector<int> store1List = {100, 200, 300, 400, 101, 201};
+std::vector<int> store1List = {102, 1, 307, 309, 208, 20, 21, 401};
+std::vector<int> store2List = {102,101, 301, 307, 308, 201, 207, 208, 401, 402};
+std::vector<int> store3List = {103, 104, 301, 305, 201, 202, 210, 403};
+std::vector<int> store4List = {104, 305, 306, 202, 203, 209, 403};
 char xtext[20];
 CCLabelTTF *xlabel;
 std::string dbP = "";
 std::map<string, vector<crew*>> CrewVectors;
 std::map<string, genre::GenresEnum> genreMap;
+std::map<int, vector<int>> storeInventories;
+std::map<int, bool> storeProgress;
 roomConfig *rConfig;
 float sfx;
 float sfy;
@@ -34,9 +39,13 @@ std::vector<int> crewList;
 std::vector<crew*> theCrew;
 std::vector<equipment*> equipmentList;
 std::vector<int> equipmentIDs;
+std::vector<crew*> preCrewMembers;
 string currentGameFile = "";
 CCScene* previousScene = new CCScene();
+ProductionClass* currentProduction = new ProductionClass();
+Script* selectedPreScript = new Script();
 bool xmlLock = false;
+std::vector<equipment*> preEquipment;
 
 extern vector<crew*> getCrewFromDB (vector<int> crewlist)
 {
@@ -78,9 +87,9 @@ extern vector<crew*> getCrewFromDB (vector<int> crewlist)
     }
     
     char strQuery[300];
-    sprintf(strQuery,"SELECT * FROM crew WHERE crew.Crew_ID IN %s;", crewString.c_str());
+    sprintf(strQuery,"SELECT * FROM crew WHERE CrewID IN %s;", crewString.c_str());
     cout << strQuery << endl;
-    vector<vector<string> > result = db->query(strQuery);
+    vector<vector<string>> result = db->query(strQuery);
     //cout << result[0][2] << endl;
     
     //Remember to update when there is a schema change to the crew table
@@ -90,29 +99,32 @@ extern vector<crew*> getCrewFromDB (vector<int> crewlist)
     int class_id = 3;
     int role = 4;
     int roleID = 5;
-    int hirecost = 6;
-    int tdayRate = 7;
-    int skill = 8;
-    int speed = 9;
-    int focus = 10;
-    int social = 11;
-    int morale = 12;
-    int confidence = 13;
-    int stamina = 14;
-    int temp1 = 15;
-    int temp2 = 16;
-    int temp3 = 17;
-    int ability = 18;
-    int abilityID = 19;
-    int image = 20;
+    int Department = 6;
+    int DepartmentID = 7;
+    int hirecost = 8;
+    int tdayRate = 9;
+    int skill = 10;
+    int speed = 11;
+    int focus = 12;
+    int social = 13;
+    int morale = 14;
+    int confidence = 15;
+    int stamina = 16;
+    int temp1 = 17;
+    int temp2 = 18;
+    int temp3 = 19;
+    int ability = 20;
+    int abilityID = 21;
+    int image = 22;
 
-    int locationMet = 21;
-    int typeTendValue= 23;
-    int typeTendOrder= 24;
-    int genreTendValue = 25;
-    int genreTendOrder = 26;
-    int lengthTendValue= 27;
-    int lengthTendOrder = 28;
+    int locationMet = 23;
+    int typeTendValue= 25;
+    int typeTendOrder= 26;
+    int genreTendValue = 27;
+    int genreTendOrder = 28;
+    int lengthTendValue= 29;
+    int lengthTendOrder = 30;
+    int Tier = 31;
     
     
     
@@ -120,7 +132,12 @@ extern vector<crew*> getCrewFromDB (vector<int> crewlist)
     for(vector<vector<string> >::iterator it = result.begin(); it < result.end(); ++it)
     {
         vector<string> row = *it;
-        cout << "Values: (A=" << row.at(0) << ", B=" << row.at(1) << ")" << endl;
+        try {
+            cout << "Values: (A=" << row.at(0) << ", B=" << row.at(1) << ")" << endl;
+        } catch (exception e) {
+            cout << "ERROR: " << e.what() << endl;
+        }
+        //cout << "Values: (A=" << row.at(0) << ", B=" << row.at(1) << ")" << endl;
         crew* tempCrew = new crew();
         
         tempCrew->crewID = atoi(row.at(crewID).c_str());
@@ -141,18 +158,30 @@ extern vector<crew*> getCrewFromDB (vector<int> crewlist)
         tempCrew->classID = atoi(row.at(class_id).c_str());
         tempCrew->roleID = atoi(row.at(roleID).c_str());
         tempCrew->role = (row.at(role));
+        tempCrew->department = (row.at(Department));
+        tempCrew->departmentID = atoi(row.at(DepartmentID).c_str());
         tempCrew->hireCost = atoi(row.at(hirecost).c_str());
         tempCrew->dayRate = atoi(row.at(tdayRate).c_str());
         tempCrew->abilityID = atoi(row.at(abilityID).c_str());
+        if(tempCrew->role == "Writer")
+        {
         tempCrew->tendType = crew::convertType(row.at(typeTendValue));
         tempCrew->tendTypeOrder = atoi(row.at(typeTendOrder).c_str());
         tempCrew->tendGenre = crew::convertGenre(row.at(genreTendValue));
         tempCrew->tendGenreOrder = atoi(row.at(genreTendOrder).c_str());
         tempCrew->tendPage = crew::convertLength(row.at(lengthTendValue));
         tempCrew->tendPageOrder = atoi(row.at(lengthTendOrder).c_str());
+        }
+        tempCrew->tier = atoi(row.at(Tier).c_str());
         
         //assign texture filename
-        cout << "images = " << row.at(image) << endl;
+        //try{
+          //  cout << "image1 = " << row.at(23) << endl;
+          //  cout << "image2 = " << row.at(22) << endl;
+        //}
+        //catch (exception e){
+          //  cout << e.what() << endl;
+        //}
         
         tempCrew->setTexture(row.at(image));
         resultVector.push_back(tempCrew);
@@ -168,7 +197,7 @@ extern vector<crew*> getCrewFromDB (vector<int> crewlist)
 extern vector<crew*> getCrewFromDBQuery (string strQuery)
 {
     vector<crew*> resultVector;
-    
+    cout << strQuery << endl;
     Database *db;
     char rPath[300];
     
@@ -184,7 +213,8 @@ extern vector<crew*> getCrewFromDBQuery (string strQuery)
     
     char chQuery[300];
     sprintf(chQuery,"%s", strQuery.c_str());
-    vector<vector<string> > result = db->query(chQuery);
+    cout << chQuery << endl;
+    vector<vector<string>> result = db->query(chQuery);
     //cout << result[0][2] << endl;
     
     //Remember to update when there is a schema change to the crew table
@@ -194,29 +224,32 @@ extern vector<crew*> getCrewFromDBQuery (string strQuery)
     int class_id = 3;
     int role = 4;
     int roleID = 5;
-    int hirecost = 6;
-    int dayRate = 7;
-    int skill = 8;
-    int speed = 9;
-    int focus = 10;
-    int social = 11;
-    int morale = 12;
-    int confidence = 13;
-    int stamina = 14;
-    int temp1 = 15;
-    int temp2 = 16;
-    int temp3 = 17;
-    int ability = 18;
-    int abilityID = 19;
-    int image = 20;
-    int locationMet = 21;
-    int typeTendValue= 23;
-    int typeTendOrder= 24;
-    int genreTendValue = 25;
-    int genreTendOrder = 26;
-    int lengthTendValue= 27;
-    int lengthTendOrder = 28;
+    int Department = 6;
+    int DepartmentID = 7;
+    int hirecost = 8;
+    int tdayRate = 9;
+    int skill = 10;
+    int speed = 11;
+    int focus = 12;
+    int social = 13;
+    int morale = 14;
+    int confidence = 15;
+    int stamina = 16;
+    int temp1 = 17;
+    int temp2 = 18;
+    int temp3 = 19;
+    int ability = 20;
+    int abilityID = 21;
+    int image = 22;
     
+    int locationMet = 23;
+    int typeTendValue= 25;
+    int typeTendOrder= 26;
+    int genreTendValue = 27;
+    int genreTendOrder = 28;
+    int lengthTendValue= 29;
+    int lengthTendOrder = 30;
+    int Tier = 31;
     
     
     
@@ -244,8 +277,10 @@ extern vector<crew*> getCrewFromDBQuery (string strQuery)
         tempCrew->classID = atoi(row.at(class_id).c_str());
         tempCrew->roleID = atoi(row.at(roleID).c_str());
         tempCrew->role = (row.at(role));
+        tempCrew->department = (row.at(Department));
+        tempCrew->departmentID = atoi(row.at(DepartmentID).c_str());
         tempCrew->hireCost = atoi(row.at(hirecost).c_str());
-        tempCrew->dayRate = atoi(row.at(dayRate).c_str());
+        tempCrew->dayRate = atoi(row.at(tdayRate).c_str());
         tempCrew->abilityID = atoi(row.at(abilityID).c_str());
         tempCrew->tendType = crew::convertType(row.at(typeTendValue));
         tempCrew->tendTypeOrder = atoi(row.at(typeTendOrder).c_str());
@@ -253,9 +288,10 @@ extern vector<crew*> getCrewFromDBQuery (string strQuery)
         tempCrew->tendGenreOrder = atoi(row.at(genreTendOrder).c_str());
         tempCrew->tendPage = crew::convertLength(row.at(lengthTendValue));
         tempCrew->tendPageOrder = atoi(row.at(lengthTendOrder).c_str());
+        tempCrew->tier = atoi(row.at(Tier).c_str());
         
         //assign texture filename
-        cout << "images = " << row.at(image) << endl;
+        //cout << "image3 = " << row.at(image) << endl;
         
         tempCrew->setTexture(row.at(image));
         resultVector.push_back(tempCrew);
@@ -316,16 +352,18 @@ extern vector<equipment*> getEquipmentFromDB(vector<int> gear)
     //Remember to update when there is a schema change to the crew table
     int EuipmentID = 0;
     int type = 1;
-    int name = 2;
-    int cost = 3;
-    int rent_cost = 4;
-    int Quality = 5;
-    int Durability = 6;
-    int t_class = 7;
-    int kit_ID = 8;
+    int brand = 2;
+    int name = 3;
+    int cost = 5;
+    int tier = 4;
+    int rent_cost = 6;
+    int Quality = 7;
+    int Durability = 8;
+    int t_class = 9;
+    int classID = 10;
+    int kit_ID = 11;
 
-    
-    
+
     
     for(vector<vector<string> >::iterator it = result.begin(); it < result.end(); ++it)
     {
@@ -335,7 +373,8 @@ extern vector<equipment*> getEquipmentFromDB(vector<int> gear)
         
         tempEquipment->equipmentID = atoi(row.at(EuipmentID).c_str());
         //assign stats
-        tempEquipment->m_type = (row.at(t_class));
+        tempEquipment->m_type = (row.at(type));
+        tempEquipment->m_brand =(row.at(brand));
         tempEquipment->m_name = (row.at(name));
         tempEquipment->cost = atoi(row.at(cost).c_str());
         tempEquipment->rentalCost = atoi(row.at(rent_cost).c_str());
@@ -343,8 +382,11 @@ extern vector<equipment*> getEquipmentFromDB(vector<int> gear)
         tempEquipment->durability = atoi(row.at(Durability).c_str());
         tempEquipment->m_class = atoi(row.at(t_class).c_str());
         tempEquipment->kitID = atoi(row.at(kit_ID).c_str());
+        tempEquipment->tier = atoi(row.at(tier).c_str());
+        tempEquipment->classID = atoi(row.at(classID).c_str());
         resultVector.push_back(tempEquipment);
-        //CrewVectors.at("room1crew").push_back(tempCrew);
+        
+        
     }
     
     db->close();
@@ -362,6 +404,17 @@ extern void mapCrewVector()
     CrewVectors.insert(std::pair<string, vector<crew*>>("room4crew",room4crew));
     
 }
+
+extern void mapStoreInventories()
+{
+    storeInventories.insert(std::pair<int, vector<int>>(1,store1List));
+    storeInventories.insert(std::pair<int, vector<int>>(2,store2List));
+    storeInventories.insert(std::pair<int, vector<int>>(3,store3List));
+    storeInventories.insert(std::pair<int, vector<int>>(4,store4List));
+   
+    
+}
+
 extern void initCrewMembers()
 {
 
@@ -773,6 +826,8 @@ extern void loadScripts(string fileName)
                     tempScript->scriptType = Script::feature;
                 }
                 
+                tempScript->difficulty = atoi(pElem->Attribute("difficulty"));
+                
                 scriptVector.push_back(tempScript);
                 
             }
@@ -895,7 +950,7 @@ extern void loadEquipment(string fileName)
     
     if(loadOkay){
         
-        /*this will just reposition the crew for right now*/
+     
         
         TiXmlElement* pElem;
         TiXmlHandle hroot(0);
@@ -924,9 +979,7 @@ extern void loadEquipment(string fileName)
                 
             }
             
-            equipmentList = getEquipmentFromDB(equipmentIDs);
-            
-            
+            equipmentList = getEquipmentFromDB(equipmentIDs); 
             
         }
         
@@ -934,4 +987,79 @@ extern void loadEquipment(string fileName)
     
     
 }
+extern void loadProgress(string fileName)
+{
+    //load unlocked stores
+    
+    
+    //load unlocked hangouts
+    
+    //load the money
+    
+    //load the production
+    
+}
 
+extern void loadStores(string fileName)
+{
+    //get write path
+    string path = CCFileUtils::sharedFileUtils()->getWritablePath();
+    
+    
+    //append file name
+    path.append(currentGameFile);
+    cout << path << endl;
+    
+    TiXmlDocument doc(path.c_str());
+    
+    bool loadOkay = doc.LoadFile();
+    
+    if(loadOkay){
+        
+        /*this will just reposition the crew for right now*/
+        
+        TiXmlElement* pElem;
+        TiXmlHandle hroot(0);
+        TiXmlHandle hdoc(&doc);
+        
+        pElem=hdoc.FirstChildElement().Element();
+        
+        cout << pElem->Value() <<endl;
+        hroot=TiXmlHandle(pElem);
+        
+        pElem=hroot.FirstChild( "Stores" ).Element();
+        cout << pElem->Value() <<endl;
+        
+        if(!pElem->NoChildren())
+        {
+            //loop through all the scripts for a match
+            //pElem=hroot.FirstChild( "crew" ).FirstChild().Element();
+            for( pElem=pElem->FirstChild( "Store" )->ToElement(); pElem; pElem=pElem->NextSiblingElement())
+            {
+                //tempElement
+                
+                //make a new script object
+                int tempStoreID = 0;
+                tempStoreID = atoi(pElem->Attribute("store_id"));
+                int lockedIndicator = 0;
+                bool lockedStatus = false;
+                lockedIndicator = atoi(pElem->Attribute("locked"));
+                if(lockedIndicator == 1)
+                {
+                    lockedStatus = true;
+                }
+                else
+                {
+                    lockedStatus = false;
+                }
+                
+                storeProgress.insert(std::pair<int, bool>(tempStoreID,lockedStatus));
+                
+            }
+            
+            
+        }
+        
+    }
+
+}

@@ -493,8 +493,8 @@ CCTableViewCell * scriptRoom:: tableCellAtIndex (CCTableView * table, unsigned i
        //cout << "author1 = " << scriptVector[idx]->authorNames[0] << endl;
     
    
-    CCTableViewCell *cell = table->dequeueCell();
-    if (!cell) {
+    CCTableViewCell *cell;// = table->dequeueCell();
+    //if (!cell) {
         cell = new CustomTableViewCell();
         cell->autorelease();
         CCSprite *sprite = CCSprite::create("grey_cell.png");
@@ -512,12 +512,12 @@ CCTableViewCell * scriptRoom:: tableCellAtIndex (CCTableView * table, unsigned i
 		//label->setAnchorPoint(CCPointZero);
         label->setTag(123);
         cell->addChild(label);
-    }
-    else
+    //}
+    /*else
     {
         CCLabelTTF *label = (CCLabelTTF*)cell->getChildByTag(123);
         label->setString(string->getCString());
-    }
+    }*/
     cout << "cell # " << idx << "title = " << string->getCString() << endl;
     return cell;
     

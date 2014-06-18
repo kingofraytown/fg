@@ -16,23 +16,24 @@
 #include "CustomTableViewCell.h"
 #include "worldmap.h"
 #include "Inventory.h"
-#include "scriptRoom.h"
-#include "crewRoom.h"
-#include "equipmentRoom.h"
+#include "chooseScript.h"
+#include "Script.h"
+#include "preProductionLanding.h"
 #include <vector>
+
 
 using namespace cocos2d;
 using namespace cocos2d::extension;
 using namespace std;
 
 
-CCScene* Inventory::scene()
+CCScene* chooseScript::scene()
 {
     // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
     
     // 'layer' is an autorelease object
-    Inventory *layer = Inventory::create();
+    chooseScript *layer = chooseScript::create();
     
     // add layer as a child to scene
     scene->addChild(layer);
@@ -42,7 +43,7 @@ CCScene* Inventory::scene()
 }
 
 // on "init" you need to initialize your instance
-bool Inventory::init()
+bool chooseScript::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -51,12 +52,13 @@ bool Inventory::init()
         return false;
     }
     //create update method
-    //scriptCount = scriptVector.size();
+    
+    scriptCount = scriptVector.size();
     //crewCount = crewList.size();
     
-    /*for(int i = 0; i < scriptVector.size(); i++)
+    for(int i = 0; i < scriptVector.size(); i++)
     {
-      //  cout << "title # " << i << " = " << scriptVector[i]->title << endl;
+        cout << "title # " << i << " = " << scriptVector[i]->title << endl;
     }
     
     int scount = 0;
@@ -65,37 +67,14 @@ bool Inventory::init()
     {
         scount++;
         uscount++;
-    }*/
-    
-    tableCount = 3;
-    buttonInfo crewButtonInfo;
-    crewButtonInfo.label = "Crew";
-    crewButtonInfo.contentID = 1;
-    buttonInfo scriptButtonInfo;
-    scriptButtonInfo.label = "Script";
-    scriptButtonInfo.contentID = 2;
-    buttonInfo equipmentButtonInfo;
-    equipmentButtonInfo.label = "Equipment";
-    equipmentButtonInfo.contentID = 0;
-    
-    cellUpImage = "invt_blue_cell.png";
-    cellDownImage = "invt_green_cell.png";
-    
-    //load UI variables
-    currentState = 0;
-    
- 
-    m_buttons = {equipmentButtonInfo, crewButtonInfo, scriptButtonInfo};
-    
-    //CCScene* wmap = this->scene();
-    //previousScene = wmap;
-    
-   /* cout << "unsigned count = " << uscount << "signed count" << scount << endl;
+    }
+      
+    cout << "unsigned count = " << uscount << "signed count" << scount << endl;
     
     uscount = (unsigned int)scount;
     
     cout << "unsigned cast on int = " << uscount << endl;
-    */
+    
     this->schedule(schedule_selector(Inventory::update));
     enterGameReel = false;
     crewPressed = false;
@@ -107,6 +86,8 @@ bool Inventory::init()
     sfx = size.width/480;
     sfy = size.height/320;
     
+    
+
     // load and cache the texture and sprite frames
     //CCFileUtils::sharedFileUtils()->setResour
     vector<string> Paths;
@@ -117,56 +98,9 @@ bool Inventory::init()
     cacher->addSpriteFramesWithFile("testAtlas.plist");
     //make some crew members
     
-    /*CCArray *crewMenuItems  = new CCArray();
-    for(int i = 0; i < crewList.size(); i++)
-    {
-        char tc_label[20];
-        sprintf(tc_label, "crew_ID = %i", crewList[i]);
-        CCMenuItemFont* tItem = CCMenuItemFont::create(tc_label, this, menu_selector(Inventory::viewCrew));
-        tItem->setFontSize(35);
-        tItem->setPosition(ccp(0,0));
-        tItem->setFontName("Helvetica");
-        tItem->setColor(ccc3(0,0,0));
-        crewMenuItems->addObject(tItem);
-    }*/
-    
-    /*crewListMenu = CCMenu::createWithArray(crewMenuItems);
-    crewListMenu->alignItemsVertically();
-    crewListMenu->setPosition(ccp((size.width/2) - (100 * sfy),(size.height/2)));
-    this->addChild(crewListMenu, -1);*/
-    
-    
-    
-    /*CCArray *scriptMenuItems  = new CCArray();
-    
-    for(int i = 0; i < scriptVector.size(); i++)
-    {
-        char tc_label[60];
-        sprintf(tc_label, "%s", scriptVector[i]->title.c_str());
-        
-        CCMenuItemFont* tItem = CCMenuItemFont::create(tc_label, this, menu_selector(Inventory::viewScripts));
-        tItem->setFontSize(20);
-        tItem->setPosition(ccp(0,0));
-        tItem->setFontName("Helvetica");
-        tItem->setColor(ccc3(0,0,0));
-        scriptMenuItems->addObject(tItem);
-    }*/
-    
-    /*script_List = CCMenu::createWithArray(scriptMenuItems);
-    script_List->alignItemsVertically();
-    script_List->setPosition(ccp((size.width/2) - (100 * sfy),(size.height/2)));
-    this->addChild(script_List, -1);*/
-    
-    
-    
-    // position the label on the center of the screen
-    //pLabel->setPosition( ccp(size.width / 2, size.height - 20) );
-    
-    // add the label as a child to this layer
-    //this->addChild(pLabel, 1);
-    
+       
     // add "background image" splash screen"
-    CCSprite* pSprite = CCSprite::create("inventory_room_bg.png");
+    CCSprite* pSprite = CCSprite::create("script_room_bg.png");
     pSprite->setAnchorPoint(ccp(0,0 ));
     pSprite->setScaleY(0.8 * sfy);
     pSprite->setScaleX(1 * sfx);
@@ -179,6 +113,12 @@ bool Inventory::init()
     poHeader->setScaleX(1.4 * sfx);
     poHeader->setPosition(ccp(size.width/2, size.height - (27 * sfy)));
     this->addChild(poHeader, 2);
+    
+    lHeader = CCLabelTTF::create("Choose A Script", "Helvetica", 30);
+    lHeader->setPosition(ccp(size.width/2, size.height - 30));
+    lHeader->setAnchorPoint(ccp(0.5,0.5));
+    
+    this->addChild(lHeader,3);
    /*
     poFooter = CCSprite::create("PO_footer.png");
     poFooter->setAnchorPoint(ccp(0.5,0.5));
@@ -188,11 +128,7 @@ bool Inventory::init()
     this->addChild(poFooter, 2);
     */
     
-    /*********BUTTONS******************/
-
-
-    // add the sprite as a child to this layer
-    this->addChild(pSprite, 0);
+       this->addChild(pSprite, 0);
     
     //Labels
     
@@ -236,25 +172,62 @@ bool Inventory::init()
     float rX = winSize.width/_bgSprite->getContentSize().width;
     float rY = winSize.height/_bgSprite->getContentSize().height;
     
-    //_bgNode->setScaleX(rX);
-    //_bgNode->setScaleY(rY);
+
+    infoView = CCSprite::create("infoSquare.png");
+    infoView->setAnchorPoint(ccp(0.5, 0.5));
+    infoView->setScaleX(sfx);
+    infoView->setScaleY(sfy);
+    infoView->setPosition(ccp((size.width/2) - (100 * sfx), (size.height/2) - (10 * sfy)));
+    CCSize infoSize = infoView->boundingBox().size;
+    
+    sTitle = CCLabelTTF::create(scriptVector[0]->title.c_str(), "Helvetica", 16);
+    sTitle->setAnchorPoint(ccp(0.5,0.5));
+    sTitle->setPosition(ccp((infoSize.width/2) - (0 * sfx) ,(infoSize.height/2) + (90 * sfy)));
+    sTitle->setColor(ccc3(0,0,0));
+    switch(scriptVector[0]->scriptType)
+    {
+        case 1:
+            sType  = CCLabelTTF::create("Shortfilm", "Helvetica", 16);
+            break;
+            
+        case 2:
+            sType  = CCLabelTTF::create("Commercial", "Helvetica", 16);
+
+            break;
+            
+        case 3:
+            sType  = CCLabelTTF::create("Feature", "Helvetica", 16);
+
+            break;
+    }
+    sType->setPosition(ccp((infoSize.width/2) - (0 * sfx) ,(infoSize.height/2) + (70 * sfy)));
+    sType->setColor(ccc3(0,0,0));
+    
+    sGenre1 = CCLabelTTF::create(scriptVector[0]->title.c_str(), "Helvetica", 16);
+    sGenre1->setPosition(ccp((infoSize.width/2) - (0 * sfx) ,(infoSize.height/2) + (50* sfy)));
+    sGenre1->setColor(ccc3(0,0,0));
+
+    //CCLabelTTF* sGenre2 = CCLabelTTF::create("Gernre 2", "Helvetica", 16);
+    char pageCount[8];
+    sprintf(pageCount, "%i",scriptVector[0]->pages);
+    sPages = CCLabelTTF::create(pageCount, "Helvetica", 16);
+    sPages->setPosition(ccp((infoSize.width/2) - (0 * sfx) ,(infoSize.height/2) + (30* sfy)));
+    sPages->setColor(ccc3(0,0,0));
+        
+    
+    infoView->addChild(sTitle, 10);
+    infoView->addChild(sType, 10);
+    infoView->addChild(sGenre1, 10);
+    infoView->addChild(sPages, 10);
+    this->addChild(infoView, 100);
 
     
-    //create tableview
-    itemTable = CCTableView::create(this, CCSizeMake(130 * sfx, 200 * sfy));
-	itemTable->setDirection(kCCScrollViewDirectionVertical);
-    itemTable->setAnchorPoint(ccp(0.5,0));
-	itemTable->setPosition(ccp((size.width - (130 * sfx)),((-300 * sfy))));
-	itemTable->setDelegate(this);
-	itemTable->setVerticalFillOrder(kCCTableViewFillTopDown);
-	this->addChild(itemTable);
-
     
     //for creating a table view
-    tableView = CCTableView::create(this, CCSizeMake(190 * sfx, 300 * sfy));
+    tableView = CCTableView::create(this, CCSizeMake(130 * sfx, 300 * sfy));
 	tableView->setDirection(kCCScrollViewDirectionVertical);
-    tableView->setAnchorPoint(ccp(0.5,0));
-	tableView->setPosition(ccp((size.width - (190 * sfx)),(size.height-(350 * sfy))));
+    tableView->setAnchorPoint(ccp(1,0));
+	tableView->setPosition(ccp((size.width - (131 * sfx)),(size.height-(350 * sfy))));
 	tableView->setDelegate(this);
 	tableView->setVerticalFillOrder(kCCTableViewFillTopDown);
 	this->addChild(tableView);
@@ -268,7 +241,7 @@ bool Inventory::init()
     return true;
 }
 
-void Inventory::tempermentShift(vector<crew*>& cArray)
+void chooseScript::tempermentShift(vector<crew*>& cArray)
 {
     vector<int> TSV(6);
     
@@ -298,29 +271,29 @@ void Inventory::tempermentShift(vector<crew*>& cArray)
     
 }
 
-void Inventory::registerWithTouchDispatcher()
+void chooseScript::registerWithTouchDispatcher()
 {
     CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
 }
 
-void Inventory::ccTouchEnded( CCTouch *touch, CCEvent *event){
+void chooseScript::ccTouchEnded( CCTouch *touch, CCEvent *event){
     
  }
 
-bool Inventory::ccTouchBegan(CCTouch *touch, CCEvent *event){
+bool chooseScript::ccTouchBegan(CCTouch *touch, CCEvent *event){
     return true;
 }
 
-void Inventory::ccTouchMoved(CCTouch* touch, CCEvent* event)
+void chooseScript::ccTouchMoved(CCTouch* touch, CCEvent* event)
 {
     
 }
 
-void Inventory::ccTouchesCancelled(CCSet* touches, CCEvent* event){
+void chooseScript::ccTouchesCancelled(CCSet* touches, CCEvent* event){
     
 }
 
-void Inventory::menuCloseCallback(CCObject* pSender)
+void chooseScript::menuCloseCallback(CCObject* pSender)
 {
     CCDirector::sharedDirector()->end();
     
@@ -329,7 +302,7 @@ void Inventory::menuCloseCallback(CCObject* pSender)
 #endif
 }
 
-void Inventory::update(float dt)
+void chooseScript::update(float dt)
 {
     //CCSize size = CCDirector::sharedDirector()->getWinSize();
     //test for crew leaving to the left room
@@ -340,21 +313,10 @@ void Inventory::update(float dt)
        
 }
 
-/*void Inventory::makeScript(){
-    //choose a number between 101 and 110
-    srand( time(NULL));
-	int roll = rand() % 9 + 101; //range 1 to 3
-    cout << "roll = " << roll << endl;
-    vector<int> writers = {roll};
-    
-    Script * newScript = new Script(getCrewFromDB(writers));
-    //scriptVector.push_back(newScript);
-    //Script::titleBuilder();
-}*/
 
-void Inventory::handleSwipe(CCObject* obj)
+void chooseScript::handleSwipe(CCObject* obj)
 {
-    /*CCSwipe * swipe = (CCSwipe*)obj;
+    CCSwipe * swipe = (CCSwipe*)obj;
     if(swipe->direction == kSwipeGestureRecognizerDirectionUp){
         
         cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
@@ -377,12 +339,12 @@ void Inventory::handleSwipe(CCObject* obj)
         cout << "gesture retain count = " << SwipeGesture->retainCount() << endl;
         gestureBufferLeft();
         
-    }*/
+    }
     
 }
 
 
-void Inventory::gestureBufferUp(){
+void chooseScript::gestureBufferUp(){
     
     
     /*CCCallFunc* startNext=CCCallFunc::create( this,
@@ -396,34 +358,60 @@ void Inventory::gestureBufferUp(){
     //switchUp();
 }
 
-void Inventory::gestureBufferDown(){
+void chooseScript::gestureBufferDown(){
     
     
 
 }
 
-void Inventory::gestureBufferRight(){
+void chooseScript::gestureBufferRight(){
     
     
 
 }
 
-void Inventory::gestureBufferLeft(){
+void chooseScript::gestureBufferLeft(){
     
     cout<< "swipe left" << endl;
 
    
 }
 
-void Inventory::scrollViewDidScroll (CCScrollView * view){
+void chooseScript::viewCrew()
+{
+    if(menuSwitch == 1){
+    //crewListMenu->setZOrder(10);
+        menuSwitch = 2;
+        tableView->reloadData();
+    }
+    else{
+        //crewListMenu->setZOrder(-1);
+        //crewPressed = false;
+    }
+}
+void chooseScript::viewScripts()
+{
+    if(menuSwitch == 2){
+        //script_List->setZOrder(10);
+        menuSwitch = 1;
+        tableView->reloadData();
+    }
+    else{
+        //script_List->setZOrder(-1);
+        //scriptsPressed = false;
+    }
+
+}
+
+void chooseScript::scrollViewDidScroll (CCScrollView * view){
     
 }
 
-void Inventory::scrollViewDidZoom (CCScrollView * view){
+void chooseScript::scrollViewDidZoom (CCScrollView * view){
     
 }
 
-void Inventory::tableCellTouched (CCTableView * table, CCTableViewCell * cell){
+void chooseScript::tableCellTouched (CCTableView * table, CCTableViewCell * cell){
     CCLog ("cell touched at index:% i", cell-> getIdx ( ));
     //here we got id of a cell and we can make some functionality depending upon our needs like
     //if(cell->getIdx()==4)
@@ -432,180 +420,121 @@ void Inventory::tableCellTouched (CCTableView * table, CCTableViewCell * cell){
     // }
 }
 
-unsigned int Inventory::numberOfCellsInTableView (CCTableView * table ){
-    /*unsigned int x = 7;
-    if( menuSwitch == 1){
+unsigned int chooseScript::numberOfCellsInTableView (CCTableView * table ){
+    unsigned int x = 7;
+   
     x = scriptCount;
-       //cout << "number of scripts = " << scriptCount << endl;
-    }
-    else if (menuSwitch == 2){
-        x = crewCount;
-    }
-    else
-    {
-        x = 1;
-    }
-   // cout << "number of cells = " << x << endl;
-     */
-    return tableCount;
+    return scriptCount;
 }
 
-void Inventory::tableCellHighlight (CCTableView * table,CCTableViewCell * cell){
-    CCTexture2D * aTexture = CCTextureCache :: sharedTextureCache () -> addImage (cellDownImage.c_str());
+void chooseScript::tableCellHighlight (CCTableView * table,CCTableViewCell * cell){
+    CCTexture2D * aTexture = CCTextureCache :: sharedTextureCache () -> addImage ("pink_cell.png");
     CCSprite * pSprite = (CCSprite *) cell-> getChildByTag (4);
     pSprite-> setTexture (aTexture);
-    cout << "button id = " << cell->getObjectID() << endl;
+    char titleChar[30];
+    int cellID = cell->getObjectID();
+    sprintf(titleChar, "%s", scriptVector[cellID]->title.c_str());
+    //title
+    sTitle->setString(titleChar);
     
+    //type
+    switch(scriptVector[0]->scriptType)
+    {
+        case 1:
+            sType->setString("Shortfilm");
+            break;
+            
+        case 2:
+            sType->setString("Commercial");
+            
+            break;
+            
+        case 3:
+            sType->setString("Feature");
+            
+            break;
+    }
 
-       /* if(cell->getObjectID() == e_script)
-        {
-            viewScripts();
-        }
-    */
+    //genre1
+    cout << "scriptgenre size = " << scriptVector[cellID]->scriptGenres.size() << endl;
+    genre* g = scriptVector[cellID]->scriptGenres[0];
     
-        //switchTable(table, itemTable);
+    int tg = static_cast<genre::GenresEnum>(g->m_genre);
+    sGenre1->setString(genreArray[tg].c_str());
     
+    //page
+    char tPage[5];
+    sprintf(tPage, "%i", scriptVector[cellID]->pages);
+    sPages->setString(tPage);
+    
+    selectedPreScript = scriptVector[cellID];
+    CCScene * wm = PreProductionLanding::scene();
+    CCDirector::sharedDirector()->replaceScene(wm);
     
     
 }
 
-void Inventory::tableCellUnhighlight (CCTableView * table, CCTableViewCell * cell){
-    CCTexture2D * aTexture = CCTextureCache :: sharedTextureCache () -> addImage (cellUpImage.c_str());
+void chooseScript::tableCellUnhighlight (CCTableView * table, CCTableViewCell * cell){
+    CCTexture2D * aTexture = CCTextureCache :: sharedTextureCache () -> addImage ("grey_cell.png");
      CCSprite * pSprite = (CCSprite *) cell-> getChildByTag (4);
      pSprite->setTexture(aTexture);
-    cout<< "cell contentID = " << cell->getObjectID() << endl;
-    if(cell->getObjectID() == e_script)
-    {
-        viewScripts();
-    }
-    
-    else if(cell->getObjectID() == e_crew)
-    {
-        viewCrew();
-    }
-    
-    else if(cell->getObjectID() == e_equipment)
-    {
-        viewEquipment();
-    }
-
 }
 
-CCSize Inventory::cellSizeForTable (CCTableView * table){
+CCSize chooseScript::cellSizeForTable (CCTableView * table){
     
-    return CCSizeMake(200 * sfx, 70 * sfy);;
+    return CCSizeMake(120 * sfx, 40 * sfy);;
 }
 
-CCTableViewCell * Inventory :: tableCellAtIndex (CCTableView * table, unsigned int idx)
+CCTableViewCell * chooseScript:: tableCellAtIndex (CCTableView * table, unsigned int idx)
 {
     CCString* string;
-    char tc_label[20];
+    char tc_label[30];
     int contentID = 0;
-                string = CCString::create(m_buttons[idx].label);
-            contentID = m_buttons[idx].contentID;
-
-          cout << "idk = " << idx << endl;
-
-    /*if(currentState == states::e_inventory){
-        char tc_label[20];
-        sprintf(tc_label,"%i  %s", idx, scriptVector[idx]->title.c_str());
-        string = CCString::create(m_buttons[idx].label);
-        //string = CCString::create(tc_label);
+        sprintf(tc_label,"%s", scriptVector[idx]->title.c_str());
+        //string = CCString::create(m_buttons[idx].label);
+        string = CCString::create(tc_label);
         
         //cout << idx << "script name = " << string->getCString() << endl;
        //cout << "author1 = " << scriptVector[idx]->authorNames[0] << endl;
-    }
-    else{
-        
-
-    }*/
-
-    CCTableViewCell *cell;// = table->dequeueCell();
-    //if (!cell) {
-        cell = new CCTableViewCell();
+    
+   
+    CCTableViewCell *cell = table->dequeueCell();
+    if (!cell) {
+        cell = new CustomTableViewCell();
         cell->autorelease();
-        CCSprite *sprite = CCSprite::create(cellUpImage.c_str());
+        CCSprite *sprite = CCSprite::create("grey_cell.png");
         sprite->setAnchorPoint(CCPointZero);
         sprite->setPosition(ccp(0, 0));
         sprite->setScaleX(sfx);
         sprite->setScaleY(sfy);
         sprite->setTag(4);
         cell->addChild(sprite);
-        cell->setObjectID(contentID);
-        CCLabelTTF *label = CCLabelTTF::create(string->getCString(), "Helvetica", 16.0);
+        cell->setObjectID(idx);
+        CCLabelTTF *label = CCLabelTTF::create(string->getCString(), "Helvetica", 12.0);
         label->setPosition(ccp(sprite->boundingBox().size.width/2, sprite->boundingBox().size.height/2));
 		label->setAnchorPoint(ccp(0.5, 0.5));
         //label->setPosition(CCPointZero);
 		//label->setAnchorPoint(CCPointZero);
         label->setTag(123);
         cell->addChild(label);
-    /*}
+    }
     else
     {
         CCLabelTTF *label = (CCLabelTTF*)cell->getChildByTag(123);
         label->setString(string->getCString());
-    }*/
+    }
     cout << "cell # " << idx << "title = " << string->getCString() << endl;
     return cell;
     
     
 }
 
-void Inventory::goback()
+void chooseScript::goback()
 {
-    //check if level2 is true
     
-    //if ture then switch table, title, and back ground
-    
-    //if not then to go to P.O.
-        CCScene * wm = worldmap::scene();
+    CCScene * wm = worldmap::scene();
     CCDirector::sharedDirector()->replaceScene(previousScene);
 
-
 }
-
-void Inventory::viewCrew()
-{
-    CCScene * sr = crewRoom::scene();
-    CCDirector::sharedDirector()->replaceScene(sr);
-
-}
-void Inventory::viewScripts()
-{
-
-    CCScene * sr = scriptRoom::scene();
-    CCDirector::sharedDirector()->replaceScene(sr);
-
-    
-}
-
-
-void Inventory::viewEquipment()
-{
-    
-    CCScene * sr = equipmentRoom::scene();
-    CCDirector::sharedDirector()->replaceScene(sr);
-}
-void Inventory::switchTable(CCTableView* currentTable,CCTableView* newTable)
-{
-     CCSize size = CCDirector::sharedDirector()->getWinSize();
-    switchData();
-    //move current table out to the right and
-    CCMoveTo * moveRight = CCMoveTo::create(.5, ccp(size.width, 0));
-    currentTable->runAction(moveRight);
-    
-    //load newTable
-    newTable->reloadData();
-    
-    //raise the new table into view
-    CCMoveBy* moveUp = CCMoveBy::create(1.5, ccp(0,330));
-    newTable->runAction(moveUp);
-    
-    
-}
-
-void Inventory::switchData()
-{
-    }
 
 

@@ -327,7 +327,7 @@ void loadGame::loadGame1()
         //load current production
         
         //load progress data
-        
+        loadStores(fName);
         //switch scene
         
         CCScene* wmap = worldmap::scene();

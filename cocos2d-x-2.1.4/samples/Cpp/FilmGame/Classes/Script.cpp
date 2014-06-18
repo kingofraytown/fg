@@ -38,6 +38,9 @@ Script::Script(vector<crew*> Authors)
 
 	pages = pages/authorCount;
 	
+        
+    //calculate difficulty
+        difficulty = GetDifficulty();
     //initialize the Genres_bag with 1 of each genre
     for (int i = 0;i < 16; i++) {
         genre* tGenre = new genre(static_cast<genre::GenresEnum>(i));
@@ -592,7 +595,7 @@ string Script::titleBuilder()
                 default:
                     break;
             }
-            
+            addOne->SetAttribute("difficulty", difficulty);
             pElem->LinkEndChild(addOne);
             doc.SaveFile(path.c_str());
 
@@ -679,6 +682,39 @@ void Script::FindReplace(std::string& str, const std::string& oldStr, const std:
         str.replace(pos, oldStr.length(), newStr);
         pos += newStr.length();
     }
+}
+
+int Script::GetDifficulty()
+{
+    int d = 0;
+    int avg_skill = 0;
+    int i = 0;
+    //get average skill of writers
+    for (int j = 0; j < scriptAuthors.size(); j++) {
+        avg_skill += scriptAuthors[j]->skill;
+        i++;
+    }
+    avg_skill = avg_skill/i;
+    
+    int typeMultiplier = 0;
+    
+    switch (scriptType) {
+        case 1:
+            typeMultiplier = 30;
+            break;
+        case 2:
+            typeMultiplier = 60;
+            break;
+        case 3:
+            typeMultiplier = 80;
+            break;
+            
+        default:
+            break;
+    }
+    
+    d = avg_skill * pages * typeMultiplier;
+    return d;
 }
 
 

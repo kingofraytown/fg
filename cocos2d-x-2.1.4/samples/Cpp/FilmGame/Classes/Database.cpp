@@ -37,6 +37,8 @@ vector<vector<string> > Database::query(char* query)
 				vector<string> values;
 				for(int col = 0; col < cols; col++)
 				{
+                    cout << statement << ", " << col << endl;
+                    
 					values.push_back((char*)sqlite3_column_text(statement, col));
 				}
 				results.push_back(values);

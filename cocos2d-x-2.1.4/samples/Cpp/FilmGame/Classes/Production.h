@@ -20,6 +20,9 @@
 #include "cocos-ext.h"
 #include "CCTableView.h"
 #include "equipment.h"
+#include "crewInfo.h"
+
+
 
 
 using namespace cocos2d;
@@ -39,6 +42,7 @@ class PShot : public CCObject
     float shotScore;
     bool currentShot;
     bool completed;
+    float possibleScore;
     
     PShot();
     
@@ -52,14 +56,15 @@ public:
     bool currentScene;
     bool completed;
     float sceneScore;
-    CCArray shotList; //should hold PShot objects
+    float possibleScore;
+    vector<PShot*> shotList; //should hold PShot objects
     
     PScene();
     
 };
 
 
-class Production : public CCLayer
+class ProductionClass : public cocos2d::CCObject
 {
 public:
 
@@ -67,27 +72,33 @@ public:
 //number of pages
     int numberOfPages;
 //number of scenes
-    int numberOfScene;
+    int numberOfScenes;
 //number of completed scenes with scores (key value pair)
-    CCArray productionScenes;
+    vector<PScene*> productionScenes;
     
     int completedScenes;
     //current scene with scores so far (key value pair)
-    PScene currentScene;
+    PScene* currentScene;
     
 //current shot (last unfinished shot)
-    PShot currentShot;
+    PShot* currentShot;
 //script difficulty (total possible points)
     float scriptScore;
 //script name
     string scriptName;
+    
+    vector<genre*>scriptGenres;
+    
+    vector<crew*> scriptAuthors;
+
+    
 
 //Crew Data
     
 //call sheet (array or vector of objects of the following)
-    CCArray callSheet; //use crewInfo
+    vector<crewInfo*> callSheet; //use crewInfo
 //Management Data
-    
+    int hoursPerDay;
 //current budget
     float currentBudget;
     
@@ -105,11 +116,12 @@ public:
     int goalNumberShootDays;
 //Equipment
 //Equipment List (array or vector)
-    CCArray ProductionEquipment; //fill equipment objects
+    vector<equipment*> ProductionEquipment; //fill equipment objects
 
 
     
 public:
+    ProductionClass();
     //2. Functions that can update the production object
     //Update the progress into the script
 //completed scenes (add to list)

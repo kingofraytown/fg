@@ -16,6 +16,8 @@
 #include "CustomTableViewCell.h"
 #include "worldmap.h"
 #include "Inventory.h"
+#include "PreProductionLanding.h"
+#include "chooseScript.h"
 
 
 using namespace cocos2d;
@@ -176,7 +178,7 @@ bool ProductionOffice::init()
     inventoryButton->setPosition(ccp((50 * sfx) , (size.height) - (27 * sfy)));
     this->addChild(inventoryButton, 3);
     
-    continueImage = CCMenuItemImage::create("continue_button.png", "continue_button.png", this, menu_selector(ProductionOffice::viewScripts));
+    continueImage = CCMenuItemImage::create("continue_button.png", "continue_button.png", this, menu_selector(ProductionOffice::continueProduction));
     continueImage->setPosition(ccp(0,0));
     continueImage->setScaleX(1 * sfx);
     continueImage->setScaleY(0.8 *sfy);
@@ -188,7 +190,7 @@ bool ProductionOffice::init()
     
     
     
-    scriptsImage = CCMenuItemImage::create("script_button.png", "script_button.png", this, menu_selector(ProductionOffice::viewScripts));
+    /*scriptsImage = CCMenuItemImage::create("script_button.png", "script_button.png", this, menu_selector(ProductionOffice::viewScripts));
     scriptsImage->setPosition(ccp(0,0));
     scriptsImage->setScaleX(0.8 * sfx);
     scriptsImage->setScaleY(0.8 *sfy);
@@ -206,6 +208,7 @@ bool ProductionOffice::init()
     crewButton = CCMenu::create(crewImage, NULL);
     crewButton->setPosition(ccp((size.width/2) - (200 * sfx) , (size.height/2) + (120 * sfy)));
     this->addChild(crewButton, 1);
+     */
 
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
@@ -259,13 +262,13 @@ bool ProductionOffice::init()
 
     
     //for creating a table view
-    tableView = CCTableView::create(this, CCSizeMake(130 * sfx, 200 * sfy));
+    /*tableView = CCTableView::create(this, CCSizeMake(130 * sfx, 200 * sfy));
 	tableView->setDirection(kCCScrollViewDirectionVertical);
 	tableView->setPosition(ccp(size.width-(150 * sfx),(size.height/2-(120 * sfy))));
 	tableView->setDelegate(this);
 	tableView->setVerticalFillOrder(kCCTableViewFillTopDown);
 	this->addChild(tableView);
-	tableView->reloadData();
+	tableView->reloadData();*/
         
     /*********************************************/
     
@@ -427,7 +430,7 @@ void ProductionOffice::viewCrew()
     if(menuSwitch == 1){
     //crewListMenu->setZOrder(10);
         menuSwitch = 2;
-        tableView->reloadData();
+        //tableView->reloadData();
     }
     else{
         //crewListMenu->setZOrder(-1);
@@ -439,7 +442,7 @@ void ProductionOffice::viewScripts()
     if(menuSwitch == 2){
         //script_List->setZOrder(10);
         menuSwitch = 1;
-        tableView->reloadData();
+        //tableView->reloadData();
     }
     else{
         //script_List->setZOrder(-1);
@@ -525,9 +528,9 @@ CCTableViewCell * ProductionOffice :: tableCellAtIndex (CCTableView * table, uns
         string = string->create( t);
 
     }
-
-    CCTableViewCell *cell = table->dequeueCell();
-    if (!cell) {
+    
+    CCTableViewCell *cell;// = table->dequeueCell();
+    //if (!cell) {
         cell = new CustomTableViewCell();
         cell->autorelease();
         CCSprite *sprite = CCSprite::create("grey_cell.png");
@@ -545,12 +548,13 @@ CCTableViewCell * ProductionOffice :: tableCellAtIndex (CCTableView * table, uns
 		//label->setAnchorPoint(CCPointZero);
         label->setTag(123);
         cell->addChild(label);
-    }
-    else
+    //}
+    /*else
     {
+        cout << "cell insides " << cell->
         CCLabelTTF *label = (CCLabelTTF*)cell->getChildByTag(123);
         label->setString(string->getCString());
-    }
+    }*/
     cout << "cell # " << idx << "title = " << string->getCString() << endl;
     return cell;
     
@@ -576,6 +580,7 @@ void ProductionOffice::startPreProduction()
 }
 void ProductionOffice::continueProduction()
 {
-    
+    CCScene * wm = chooseScript::scene();
+    CCDirector::sharedDirector()->replaceScene(wm);
 }
 

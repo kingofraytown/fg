@@ -44,6 +44,7 @@ bool StartPage::init()
     enterGameReel = false;
     gamesFilesCount = 0;
     makeGenreMap();
+    mapStoreInventories();
         // ask director the window size
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     sfx = size.width/480;
@@ -383,6 +384,7 @@ void StartPage::NewGameButton(){
     makeNewGameFile();
     
     makeGenreMap();
+    mapStoreInventories();
     CCScene* wMap = loadGame::scene();
     CCDirector::sharedDirector()->replaceScene(wMap);
 

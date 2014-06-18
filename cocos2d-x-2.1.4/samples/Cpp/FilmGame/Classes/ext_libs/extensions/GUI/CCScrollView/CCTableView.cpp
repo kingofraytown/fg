@@ -243,16 +243,25 @@ void CCTableView::removeCellAtIndex(unsigned int idx)
 CCTableViewCell *CCTableView::dequeueCell()
 {
     CCTableViewCell *cell;
-
-    if (m_pCellsFreed->count() == 0) {
-        cell = NULL;
-    } else {
-        cell = (CCTableViewCell*)m_pCellsFreed->objectAtIndex(0);
-        cell->retain();
-        m_pCellsFreed->removeObjectAtIndex(0);
-        cell->autorelease();
+    if(m_pCellsFreed != NULL){
+        try {
+            int y = m_pCellsFreed->count();
+        }
+        catch (std::exception& e)
+            {
+                std::cout << "tableview exception " << e.what() << std::endl;
+            }        if ( m_pCellsFreed->count() == 0) {
+            cell = NULL;
+        }
+        else
+        {
+            cell = (CCTableViewCell*)m_pCellsFreed->objectAtIndex(0);
+            cell->retain();
+            m_pCellsFreed->removeObjectAtIndex(0);
+            cell->autorelease();
+        }
     }
-    return cell;
+        return cell;
 }
 
 void CCTableView::_addCellIfNecessary(CCTableViewCell * cell)

@@ -48,6 +48,9 @@ crew::crew(){
     m_name = "";
     m_class = "";
     abilityID = 0;
+    department = "";
+    departmentID = -1;
+    tier = 0;
     
     char images[200];
     sprintf(images,image.c_str());
@@ -87,7 +90,7 @@ void crew::setTexture(string texture)
     cocos2d::CCSpriteFrameCache* cacher;
     cacher = cocos2d::CCSpriteFrameCache::sharedSpriteFrameCache();
     cacher->addSpriteFramesWithFile("testAtlas.plist");
-    cout << "images = " << images << endl;
+    cout << "images4 = " << images << endl;
     this->initWithSpriteFrameName(images);
     //this->initWithSpriteFrameName(images);
     this->temperAssign();

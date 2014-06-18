@@ -40,7 +40,8 @@ class crew : public cocos2d::CCSprite
     prodFocus,
     prodSocial,
     prodStamina,
-    prodSkill;
+    prodSkill,
+    tier;
 
     int activeStamina,
     activeSpeed,
@@ -53,7 +54,8 @@ class crew : public cocos2d::CCSprite
     dayRate,
     roleID,
     classID,
-    abilityID;
+    abilityID,
+    departmentID;
         
     
     //these values should be read in from the database as enum and then converted to ints when they are being assigned as member variables
@@ -67,6 +69,7 @@ class crew : public cocos2d::CCSprite
     string role;
     string m_name;
     string m_class;
+    string department;
     
     
     

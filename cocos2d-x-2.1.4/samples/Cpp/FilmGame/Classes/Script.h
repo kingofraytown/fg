@@ -29,7 +29,7 @@ class Script : public cocos2d::CCSprite
     string title;
     //genre scriptGenre;
     string scriptAuthor;
-    
+    int difficulty;
     types scriptType;
     vector<genre*> Genre_bag;
     vector<genre*> scriptGenres;
@@ -67,6 +67,7 @@ class Script : public cocos2d::CCSprite
     
     int PagesByType(types t, crew* c);
     int pagesByTendencyOrder(int order, types type, crew::pageLength tendencyLength);
+    int GetDifficulty();
 };
 
 #endif /* defined(__FilmGame__Script__) */

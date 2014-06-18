@@ -33,7 +33,15 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
                    ../../CLasses/genre.cpp \
                    ../../Classes/ProductionOffice.cpp \
                    ../../Classes/TestGame.cpp \
-                   ../../Classes/Inventory.cpp
+                   ../../Classes/Inventory.cpp \
+                   ../../Classes/equipment.cpp \
+                   ../../Classes/Production.cpp \
+                   ../../Classes/chooseScript.cpp \
+                   ../../Classes/scriptRoom.cpp \
+                   ../../Classes/equipmentRoom.cpp \
+                   ../../Classes/crewRoom.cpp \
+                   ../../Classes/PreProductionLanding.cpp\
+                   ../../Classes/PreUtility.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
 #LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../../../Extensions

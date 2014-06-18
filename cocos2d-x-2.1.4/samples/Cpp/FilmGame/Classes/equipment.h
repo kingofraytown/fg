@@ -31,7 +31,11 @@ class equipment : public cocos2d::CCSprite
     rentalCost,
     quality,
     durability,
-    kitID;
+    kitID,
+    classID,
+    tier;
+    
+    bool rental;
     
     string m_type;
     string m_brand;
@@ -40,7 +44,8 @@ class equipment : public cocos2d::CCSprite
     
     //functions
     equipment();
-    
+    static bool CompareTo(equipment* e1, equipment* e2);
+
 };
 
 

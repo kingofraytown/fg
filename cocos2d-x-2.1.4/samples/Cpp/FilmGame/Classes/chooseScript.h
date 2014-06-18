@@ -6,8 +6,8 @@
 //
 //
 
-#ifndef __FilmGame__ProductionOffice__
-#define __FilmGame__ProductionOffice__
+#ifndef __FilmGame__chooseScript__
+#define __FilmGame__chooseScript__
 
 #include "cocos2d.h"
 #include "crew.h"
@@ -20,7 +20,16 @@
 
 using namespace cocos2d;
 using namespace cocos2d::extension;
-class ProductionOffice : public CCLayer, public CCTableViewDataSource, public CCTableViewDelegate
+/*class buttonInfo : CCObject
+{
+public:
+    string label;
+    
+    int contentID;
+    
+};*/
+
+class chooseScript : public CCLayer, public CCTableViewDataSource, public CCTableViewDelegate
 {
 public:
     // Method 'init' in cocos2d-x returns bool, instead of 'id' in cocos2d-iphone (an object pointer)
@@ -33,7 +42,7 @@ public:
     vector<CCNode*> nodeArray;
     int menuSwitch;
     crew* target;
-    int scriptCount;
+    unsigned int scriptCount;
     int crewCount;
     CCSprite* poHeader;
     CCSprite* poFooter;
@@ -41,6 +50,9 @@ public:
     CCSprite* leftBorder;
     CCNode * _bgNode;
     CCSprite *_bgSprite;
+    CCSprite* infoView;
+    
+    vector<buttonInfo> m_buttons;
     
     CCSprite* rightArrow;
     bool startAnimation;
@@ -50,17 +62,22 @@ public:
     bool scriptsPressed;
     CCMenu* inventoryButton;
     CCMenu* scriptsButton;
-    CCMenu* crewButton;
     CCMenu* backButton;
     CCMenu* continueButton;
     CCTableView* tableView;
     CCMenuItemImage* backImage;
-    CCMenuItemImage* scriptsImage;
-    CCMenuItemImage* crewImage;
+
     CCMenuItemImage* inventoryImage;
     CCMenuItemImage* continueImage;
     CCSwipeGestureRecognizer* SwipeGesture;
     
+    
+    CCLabelTTF* sTitle;
+    CCLabelTTF* sType;
+    CCLabelTTF* sGenre1;
+    CCLabelTTF* sGenre2;
+    CCLabelTTF* sPages;
+    CCLabelTTF* lHeader;
     // a selector callback
     void menuCloseCallback(CCObject* pSender);
     
@@ -90,13 +107,12 @@ public:
     void startPreProduction();
     void continueProduction();
     void viewCrew();
-    //void viewEquipment();
     void viewScripts();
     
     void goback();
     // preprocessor macro for "static create()" constructor ( node() deprecated )
-    CREATE_FUNC(ProductionOffice);
+    CREATE_FUNC(chooseScript);
     };
 
 
-#endif /* defined(__FilmGame__ProductionOffice__) */
+#endif /* defined(__FilmGame__chooseScript__) */
